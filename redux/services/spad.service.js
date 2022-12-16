@@ -138,7 +138,7 @@ class SpadService {
         let value = "0";
         
         if(currencyAddress === "") {
-            value = parseInt(web3.utils.toWei((amount).toString(), 'ether')).toString(16);    
+            value = getFromDecimals("", amount);
         }
         try {
             await spadActionsContract.methods.activate(spadAddress,  description).send({
