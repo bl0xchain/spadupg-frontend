@@ -138,7 +138,7 @@ class SpadService {
         let value = "0";
         
         if(currencyAddress === "") {
-            value = getFromDecimals("", amount);
+            value = getFromDecimals("", amount).toString();
         }
         try {
             await spadActionsContract.methods.activate(spadAddress,  description).send({
