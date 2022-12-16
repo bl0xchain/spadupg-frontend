@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button, FormControl, Modal, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import spadService from "../../redux/services/spad.service";
 import tokensService from "../../redux/services/tokens.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
 
