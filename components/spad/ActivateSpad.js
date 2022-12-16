@@ -35,7 +35,7 @@ const ActivateSpad = ({ spadAddress, spad, loadSpad }) => {
                 loadSpad();
                 
             } else {
-                toast.error("SPAD creation failed.")
+                toast.error("SPAD activation failed.")
             }
             setActivating(false);
         }
