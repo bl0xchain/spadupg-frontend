@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import spadService from "../../redux/services/spad.service";
 import Pitch from "./Pitch";

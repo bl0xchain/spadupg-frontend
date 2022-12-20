@@ -1,7 +1,8 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, Card, Form, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import SpadCardPlaceholder from "../../components/spad/SpadCardPlaceholder";
 import SpadDetailsCard from "../../components/spad/SpadDetailsCard";
 import spadService from "../../redux/services/spad.service";
@@ -27,12 +28,6 @@ const PitchSpad = () => {
     const loadSpad = async() => {
         const spadDetails = await spadService.getSpadDetails(spadAddress);
         setSpad(spadDetails);
-        const contrib = await spadService.getContribution(address, spadDetails.currencyAddress, spadAddress);
-        setContribution(contrib);
-        if(contrib === 0) {
-            const pitch = await spadService.getPitch(address, spadAddress);
-            setPitch(pitch);
-        }
     }
 
     const handlePitch = async () => {
@@ -47,8 +42,7 @@ const PitchSpad = () => {
             setPitchProcessing(false);
             return;
         }
-
-        const response = spadService.pitchForSPAD(address, spadAddress, name, description);
+        const response = await spadService.pitchForSPAD(address, spadAddress, name, description);
         if(response.code == 200) {
             const pitch = await spadService.getPitch(address, spadAddress);
             setPitch(pitch);
@@ -59,11 +53,28 @@ const PitchSpad = () => {
         setPitchProcessing(false);
     }
 
+    const loadContribution = useCallback( async() => {
+        console.log('load contribution')
+        if(address && spad && spadAddress)
+        {
+            const contrib = await spadService.getContribution(address, spad.currencyAddress, spadAddress);
+            setContribution(contrib);
+            if(contrib === 0) {
+                const pitch = await spadService.getPitch(address, spadAddress);
+                setPitch(pitch);
+            }
+        }
+    }, [address, spad, spadAddress])
+
     useEffect(() => {
         if(spadAddress !== undefined) {
             loadSpad()
         }
     }, [spadAddress])
+
+    useEffect(() => {
+        loadContribution();
+    }, [address, spad])
 
     return (
         <div className="main-content">
@@ -71,7 +82,7 @@ const PitchSpad = () => {
             {
                 spad ?
                 <>
-                    <SpadDetailsCard spadAddress={spadAddress} spad={spad} loadSpad={loadSpad} />
+                    <SpadDetailsCard spadAddress={spadAddress} spad={spad} loadSpad={loadSpad} hideActions={true} />
                     {
                         (spad.status == 4 && contribution == 0) ?
                         <Card className="rounded color p-4 mb-4 shadow compact">

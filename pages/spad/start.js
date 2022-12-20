@@ -78,7 +78,6 @@ const Start = () => {
                 query: { isNew: 1 }
             })
         } catch (error) {
-            console.log(error);
             if(error.message) {
                 toast.error("SPAD creation failed." + error.message)
             } else {

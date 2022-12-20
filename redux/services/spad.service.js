@@ -1,16 +1,15 @@
 
-import { sendTransaction } from "../utils";
-import { getDecimals, getFromDecimals, getCurrencyName } from "./tokens.service";
+import tokensService, { getDecimals, getFromDecimals, getCurrencyName } from "./tokens.service";
 import web3 from "../web3";
 
 const contractSpadActionABI = require("../../abis/spad-actions-abi.json");
-export const actionContractAddress = "0xC5A76703DDD390dB4C43499d546Fbc3aEcf30F04";
+export const actionContractAddress = "0x8480FcB2eD77bB6DC7260e086f89Fd1B42ce4f1a";
 export const spadActionsContract = new web3.eth.Contract(
     contractSpadActionABI, actionContractAddress
 );
 
 const contractSpadFactoryABI = require("../../abis/spad-factory-abi.json");
-export const factoryContractAddress = "0x0eA97e9f0FFDa7e9f58dfF7AACEB70d8F19FD85E";
+export const factoryContractAddress = "0x40F5b3BB2426df97fa9B9c567303C99B13Aa386F";
 export const spadFactoryContract = new web3.eth.Contract(
     contractSpadFactoryABI, factoryContractAddress
 );
@@ -28,22 +27,6 @@ class SpadService {
             spadAddresses.push(spadAddress);
         }
         return spadAddresses;
-    }
-
-    async createSPAD(address, name, tokenSymbol, tokenTotalSupply, target, minInvestment, maxInvestment, passKey, _currencyAddress) {
-        if (!window.ethereum || address === null || address === "") {
-            return {
-                status: "💡 Connect your Metamask wallet to create SPAD.",
-                code: 403
-            };
-        }
-
-        const currencyAddress = (_currencyAddress == "") ? '0x0000000000000000000000000000000000000000' : _currencyAddress;
-
-        const data = spadFactoryContract.methods.createSPAD(name, tokenSymbol, getDecimals(_currencyAddress, tokenTotalSupply), getDecimals(_currencyAddress, target), getDecimals(_currencyAddress, minInvestment), getDecimals(_currencyAddress, maxInvestment), passKey, currencyAddress).encodeABI();
-        const value = 0;
-
-        return await sendTransaction(address, factoryContractAddress, data, value);
     }
 
     getSpadContract(spadAddress) {
@@ -80,7 +63,7 @@ class SpadService {
         spadDetails.investmentCurrency = getCurrencyName(spadDetails.currencyAddress);
 
         spadDetails.symbol = await spadContract.methods.symbol().call();
-        spadDetails.totalSupply = await spadContract.methods.totalSupply().call();
+        spadDetails.totalSupply = await spadContract.methods.totalTokens().call();
         spadDetails.totalSupplyView = Number(getFromDecimals(spadDetails.currencyAddress,spadDetails.totalSupply));
         spadDetails.decimals = await spadContract.methods.decimals().call();
 
@@ -112,7 +95,7 @@ class SpadService {
         if(spadDetails.status == 5) {
             spadDetails.acquiredBy = await spadActionsContract.methods.getAcquiredBy(spadAddress).call();
             try {
-                spadDetails.isInvestmentClaimed = await spadActionsContract.methods.isInvestmentClaimed(spadAddress).call({from: address});
+                spadDetails.tokenBalance = await tokensService.getTokenBalance(address, spadAddress, spadDetails.currencyAddress);
             } catch (error) {
                 
             }
@@ -124,7 +107,7 @@ class SpadService {
         if (!window.ethereum || spadAddress === "" || address === "") {
             return 0;
         }
-        const contribution = await spadActionsContract.methods.getContribution(spadAddress).call({from: address}); 
+        const contribution = await spadActionsContract.methods.getContribution(spadAddress, address).call({from: address}); 
         return parseFloat(getFromDecimals(currencyAddress, contribution));
     }
 
@@ -177,40 +160,6 @@ class SpadService {
         }
     }
 
-    async sendTransaction(address, contractAddress, data, value) {
-        if (!window.ethereum || address === null || address === "") {
-            return {
-                status: "💡 Connect your Metamask wallet to create SPAD.",
-                code: 403
-            };
-        }
-      
-        const transactionParameters = {
-            to: contractAddress,
-            from: address,
-            data: data,
-            value: value
-        };
-      
-        try {
-            const txHash = await window.ethereum.request({
-                method: "eth_sendTransaction",
-                params: [transactionParameters],
-            });
-      
-            return {
-                status: txHash,
-                code: 200
-            }
-      
-        } catch (error) {
-            return {
-                status: "😥 " + error.message,
-                code: 403
-            };
-        }
-    }
-
     async getPitch(address, spadAddress) {
         const pitch = await spadActionsContract.methods.getPitch(spadAddress).call({from: address});
         return pitch;
@@ -229,7 +178,7 @@ class SpadService {
             };
         }
         try {
-            await spadActionsContract.methods.pitchSpad(spadAddress, name, description, "").send({
+            await spadActionsContract.methods.pitchSpad(spadAddress, name, description).send({
                 from: address,
                 value: 0
             });
@@ -289,10 +238,12 @@ class SpadService {
             };
         }
         try {
-            await spadActionsContract.methods.claimInvestment(spadAddress).send({
+            const spadContract = this.getSpadContract(spadAddress);
+            const resp = await spadContract.methods.claimTokens().send({
                 from: address,
                 value: 0
             });
+            console.log(resp);
             return {
                 code: 200
             }
@@ -326,28 +277,6 @@ class SpadService {
         const spadAddresses = await spadActionsContract.methods.getInvestedSpads().call({from: address});
         return spadAddresses;
     }
-
-    getTwitterHandle = async(address) => {
-        if (!window.ethereum || address === "") {
-            return "";
-        }
-        const handle = await spadFactoryContract.methods.getTwitterHandle(address).call(); 
-        return handle;
-    }
-
-    async setTwitterHandle(address, handle) {
-        if (!window.ethereum || address === null || address === "") {
-            return {
-                status: "💡 Connect your Metamask wallet to process approval.",
-                code: 403
-            };
-        }
-        const value = 0;
-        const data = spadFactoryContract.methods.setTwitterHandle(address, handle).encodeABI();
-        const response = await this.sendTransaction(address, factoryContractAddress, data, value);
-        return response;
-    }
-
 }
 
 export default new SpadService();

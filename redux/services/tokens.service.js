@@ -78,41 +78,6 @@ class TokensService {
         }
     }
 
-    // async allowCurrency (address, currencyAddress, amount)  {
-    //     if (!window.ethereum || address === null || address === "") {
-    //         return {
-    //             status: "💡 Connect your Metamask wallet to approve tokens.",
-    //             code: 403
-    //         };
-    //     }
-
-    //     const contract = getCurrencyContract(currencyAddress);
-
-    //     const transactionParameters = {
-    //         to: currencyAddress,
-    //         from: address,
-    //         data: contract.methods.approve(actionContractAddress, getDecimals(currencyAddress, amount.toString())).encodeABI()
-    //     };
-
-    //     try {
-    //         const txHash = await window.ethereum.request({
-    //             method: "eth_sendTransaction",
-    //             params: [transactionParameters],
-    //         });
-
-    //         return {
-    //             status: txHash,
-    //             code: 200
-    //         }
-
-    //     } catch (error) {
-    //         return {
-    //             status: "😥 " + error.message,
-    //             code: 403
-    //         };
-    //     }
-    // }
-
     async getTokenBalance(address, tokenAddress, currencyAddress) {
         const contract = getCurrencyContract(tokenAddress);
         const balance = await contract.methods.balanceOf(address).call({

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -48,7 +48,7 @@ const Pitch = ({ spadAddress, pitcher }) => {
             pitch ?
             <>
                 <h5 className="mb-0">{pitch.name}</h5>
-                <small className="text-muted">{props.pitcher}</small>
+                <small className="text-muted">{pitcher}</small>
                 <p className="mb-0 mt-3">{pitch.description}</p>
                 <div className="mt-3">
                 {

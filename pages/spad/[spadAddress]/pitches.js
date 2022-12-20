@@ -36,7 +36,7 @@ const SpadPitches = () => {
                 <>
                     <SpadDetailsCard spadAddress={spadAddress} spad={spad} loadSpad={loadSpad} />
                     <hr className='mb-4' />
-                    <div className='fw-bold compact'>
+                    <div className='compact'>
                         <h2 className="fw-bold mb-4">PITCHES</h2>
                         <ViewPitches spadAddress={spadAddress} />
                     </div>

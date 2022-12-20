@@ -7,6 +7,7 @@ import spadService from "../../redux/services/spad.service";
 import tokensService from "../../redux/services/tokens.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
 import { getShortAddress } from "../../redux/utils";
+import EtherScanAddress from "../EtherScanAddress";
 import ActivateSpad from "./ActivateSpad";
 import Contribute from "./Contribute";
 
@@ -17,7 +18,7 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
 
     const [contribution, setContribution] = useState("");
 
-    const [isClaimed, setIsClaimed] = useState(false);
+    // const [isClaimed, setIsClaimed] = useState(false);
     const [claimProcessing, setClaimProcessing] = useState(false);
     const [claimedTokens, setClaimedTokens] = useState(0);
 
@@ -25,12 +26,12 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
         const contrib = await spadService.getContribution(address, spad.currencyAddress, spadAddress);
         setContribution(contrib);
         if(spad.status == 5 && contrib > 0) {
-            const isClaimed = await spadService.isInvestmentClaimed(address, spadAddress);
-            setIsClaimed(isClaimed);
-            if(isClaimed) {
-                const tokenBalance = await tokensService.getTokenBalance(address, spad.tokenAddress, spad.currencyAddress);
-                setClaimedTokens(tokenBalance);
-            }
+            // const isClaimed = await spadService.isInvestmentClaimed(address, spadAddress);
+            // setIsClaimed(isClaimed);
+            // if(isClaimed) {
+            const tokenBalance = await tokensService.getTokenBalance(address, spadAddress, spad.currencyAddress);
+            setClaimedTokens(tokenBalance);
+            // }
         }
     }
 
@@ -43,7 +44,7 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
         const response = await spadService.claimInvestment(address, spadAddress);
         if(response.code == 200) {
             toast.success("Claimed investment for SPAD")
-            loadSpad();
+            fetchData();
         } else {
             toast.error("Problem with claiming investment for SPAD")
         }
@@ -88,23 +89,32 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
                     {
                         spad.status === "5" &&
                         <>
-                            <div className="text-secondary1 fw-bold">ACQUIRED BY</div>
-                            <p className="fw-bold fs-5">
-                                <Link href={"https://goerli.etherscan.io/address/"+spad.acquiredBy} target="_blank">
-                                {
-                                    spad.acquiredBy === address ?
-                                    <>YOU</> :
-                                    <> { getShortAddress(spad.acquiredBy) } </>
-                                }
-                                </Link>
-                            </p>
+                        {
+                            spad.spadInitiator === address ?
+                            <p className="fw-bold">
+                            You have approved the pitch of <EtherScanAddress address={spad.acquiredBy} /> and {" "}
+                            {spad.targetView} {" "} {spad.investmentCurrency} has been transfered to pitcher account.
+                            </p> :
+                            <>
+                            {
+                                spad.acquiredBy === address ?
+                                <p className="fw-bold">
+                                    Your pitch has been approved and {" "}
+                                    {spad.targetView} {" "} {spad.investmentCurrency} has been transfered to your account.
+                                </p> :
+                                <p className="fw-bold">
+                                   The SPAD is aquired by <EtherScanAddress address={spad.acquiredBy} />
+                                </p>
+                            }
+                            </>
+                        }
                         </>
                     }
                     {
                         contribution > 0 &&
                         <>
                         {
-                            isClaimed ?
+                            claimedTokens > 0 ?
                             <p className="text-success1 mb-0">You have claimed your <b>{claimedTokens} {" "} {spad.symbol}</b> tokens </p> :
                             <div>
                             {
