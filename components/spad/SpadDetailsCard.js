@@ -7,7 +7,7 @@ import EtherScanAddress from "../EtherScanAddress";
 import Share from "./Share";
 import SpadActions from "./SpadActions";
 
-const SpadDetailsCard = ({ spadAddress, spad, loadSpad }) => {
+const SpadDetailsCard = ({ spadAddress, spad, loadSpad, hideActions }) => {
     const [initiatorContriPct, setInitiatorContriPct] = useState(10)
     const spadStatus = {
         1: 'pending',
@@ -139,7 +139,11 @@ const SpadDetailsCard = ({ spadAddress, spad, loadSpad }) => {
                     </Row>
                 </Col>
             </Row>
-            <SpadActions spadAddress={spadAddress} spad={spad} loadSpad={loadSpad} />
+            {
+                ! hideActions &&
+                <SpadActions spadAddress={spadAddress} spad={spad} loadSpad={loadSpad} />
+            }
+            
         </Card>
     )
 }
