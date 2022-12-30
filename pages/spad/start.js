@@ -73,11 +73,11 @@ const Start = () => {
                 value: 0
             });
             toast.success("SPAD created successfully.");
-            console.log(newSpadResponse.events.SPADCreated.returnValues.spadAddress);
-            // router.push({
-            //     pathname: '/spad/'+newSpadResponse.events.SPADCreated.returnValues.spadAddress,
-            //     query: { isNew: 1 }
-            // })
+            console.log(newSpadResponse.events.SpadCreated.returnValues.spadAddress);
+            router.push({
+                pathname: '/spad/'+newSpadResponse.events.SpadCreated.returnValues.spadAddress,
+                query: { isNew: 1 }
+            })
         } catch (error) {
             if(error.message) {
                 toast.error("SPAD creation failed." + error.message)
@@ -87,17 +87,6 @@ const Start = () => {
             
             setStartSpadLoading(false);
         }
-        // const response = await factoryService.startSpad(address, name, tokenSymbol, target, minInvestment, maxInvestment, currency);
-        // if(response.status == 200) {
-        //     toast.success("SPAD created successfully.")
-        //     router.push({
-        //         pathname: '/spad/'+response.data.events.SpadCreated.returnValues.spadAddress,
-        //         query: { isNew: 1 }
-        //     })
-        // } else {
-        //     toast.error("SPAD creation failed.")
-        // }
-        // setStartSpadLoading(false);
     }
 
     return (

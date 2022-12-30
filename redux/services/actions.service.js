@@ -166,7 +166,7 @@ class ActionsService {
                 spadAddresses.push(event.returnValues.spadAddress);
             }
         })
-        return spadAddresses;
+        return spadAddresses.reverse();
     }
 }
 

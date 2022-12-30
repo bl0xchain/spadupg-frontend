@@ -46,7 +46,7 @@ class FactoryService {
         spads.forEach((event) => {
             spadAddresses.push(event.returnValues.spadAddress);
         })
-        return spadAddresses;
+        return spadAddresses.reverse();
     }
 
     async getCreatedSpads(address) {
@@ -59,7 +59,7 @@ class FactoryService {
         spads.forEach((event) => {
             spadAddresses.push(event.returnValues.spadAddress);
         })
-        return spadAddresses;
+        return spadAddresses.reverse();
     }
 }
 
