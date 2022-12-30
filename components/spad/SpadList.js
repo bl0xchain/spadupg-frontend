@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Col, Row } from "react-bootstrap";
-import spadService from "../../redux/services/spad.service";
+import factoryService from "../../redux/services/factory.service";
+import spadsService from "../../redux/services/spads.service";
+// import spadService from "../../redux/services/spad.service";
 import SpadCard from "./SpadCard";
 import SpadCardPlaceholder from "./SpadCardPlaceholder";
 
@@ -10,9 +12,12 @@ const SpadList = () => {
 
     const loadSpadAddresses = async() => {
         setLoading(true);
-        const addresses = await spadService.getSpadAddresses();
+        // const addresses = await spadService.getSpadAddresses();
+        const addresses = await factoryService.getAllSpads();
         setSpadAddresses(addresses);
         setLoading(false);
+        const spadDetails = await spadsService.getSpadDetails(addresses[0]);
+        console.log(spadDetails);
     }
 
     useEffect(() => {

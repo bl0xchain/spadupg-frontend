@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { spadFactoryContract } from "../../redux/services/spad.service";
 import { currencies, getDecimals } from "../../redux/services/tokens.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
+import factoryService, { factoryContract } from "../../redux/services/factory.service";
 
 const Start = () => {
     const [name, setName] = useState("")
@@ -62,21 +63,21 @@ const Start = () => {
             return;
         }
 
-        let _passKey = isPrivate ? passKey : "";
         setStartSpadLoading(true);
 
         const currencyAddress = (currency == "") ? '0x0000000000000000000000000000000000000000' : currency;
 
         try {
-            const newSpadResponse = await spadFactoryContract.methods.createSpad(name, tokenSymbol, getDecimals(currency, totalSupply), getDecimals(currency, target), getDecimals(currency, minInvestment), getDecimals(currency, maxInvestment), _passKey, currencyAddress).send({
+            const newSpadResponse = await factoryContract.methods.createSpad(name, tokenSymbol, getDecimals(currency, target), getDecimals(currency, minInvestment), getDecimals(currency, maxInvestment), currencyAddress).send({
                 from: address,
                 value: 0
             });
-            toast.success("SPAD created successfully.")
-            router.push({
-                pathname: '/spad/'+newSpadResponse.events.SPADCreated.returnValues.spadAddress,
-                query: { isNew: 1 }
-            })
+            toast.success("SPAD created successfully.");
+            console.log(newSpadResponse.events.SPADCreated.returnValues.spadAddress);
+            // router.push({
+            //     pathname: '/spad/'+newSpadResponse.events.SPADCreated.returnValues.spadAddress,
+            //     query: { isNew: 1 }
+            // })
         } catch (error) {
             if(error.message) {
                 toast.error("SPAD creation failed." + error.message)
@@ -86,6 +87,17 @@ const Start = () => {
             
             setStartSpadLoading(false);
         }
+        // const response = await factoryService.startSpad(address, name, tokenSymbol, target, minInvestment, maxInvestment, currency);
+        // if(response.status == 200) {
+        //     toast.success("SPAD created successfully.")
+        //     router.push({
+        //         pathname: '/spad/'+response.data.events.SpadCreated.returnValues.spadAddress,
+        //         query: { isNew: 1 }
+        //     })
+        // } else {
+        //     toast.error("SPAD creation failed.")
+        // }
+        // setStartSpadLoading(false);
     }
 
     return (
@@ -221,7 +233,7 @@ const Start = () => {
                             </Col>
                             
                         </Row>
-                        <Row className="justify-content-md-center">
+                        {/* <Row className="justify-content-md-center">
                             <Col md="6">
                                 <Form.Group className="mb-4 text-center">
                                     <Form.Label>TOTAL SUPPLY OF {tokenSymbol ? tokenSymbol : 'TOKEN'}</Form.Label>
@@ -238,8 +250,8 @@ const Start = () => {
                                     />
                                 </Form.Group>
                             </Col>
-                        </Row>
-                        <Row>
+                        </Row> */}
+                        {/* <Row>
                             <Col md="6">
                             <Form.Check 
                                 type="switch"
@@ -276,7 +288,7 @@ const Start = () => {
                                     </InputGroup>
                                 </Col>
                             </Fade>
-                        </Row>
+                        </Row> */}
                         <Form.Group className="mb-4 text-center">
                             <Form.Label>CONTRIBUTION BY CREATOR TO ACTIVATE SPAD</Form.Label>
                             <p>

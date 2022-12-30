@@ -7,7 +7,9 @@ import EtherScanAddress from "../../../components/EtherScanAddress";
 import Participants from "../../../components/spad/Participants";
 import SpadCardPlaceholder from "../../../components/spad/SpadCardPlaceholder";
 import SpadDetailsCard from "../../../components/spad/SpadDetailsCard";
-import spadService from "../../../redux/services/spad.service";
+import pitchService from "../../../redux/services/pitch.service";
+import spadsService from "../../../redux/services/spads.service";
+// import spadService from "../../../redux/services/spad.service";
 
 const Spad = () => {
     const router = useRouter()
@@ -17,13 +19,13 @@ const Spad = () => {
     const [pitch, setPitch] = useState(null)
 
     const loadSpad = async() => {
-        const spadDetails = await spadService.getSpadDetails(spadAddress);
+        const spadDetails = await spadsService.getSpadDetails(spadAddress, true);
         setSpad(spadDetails);
-        if(spadDetails.isPrivate) {
-            spadService.getPitch(spadDetails.spadInitiator, spadAddress).then((pitch) => {
-                setPitch(pitch);
-            });
-        }
+        // if(spadDetails.isPrivate) {
+        //     pitchService.getPitch(spadDetails.spadInitiator, spadAddress).then((pitch) => {
+        //         setPitch(pitch);
+        //     });
+        // }
     }
 
     useEffect(() => {

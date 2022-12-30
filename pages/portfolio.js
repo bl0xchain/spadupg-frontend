@@ -6,18 +6,20 @@ import spadService from "../redux/services/spad.service";
 import Wallet from "../components/Wallet";
 import PortfolioSpad from "../components/spad/PortfolioSpad";
 import styles from '../styles/Portfolio.module.css'
+import factoryService from "../redux/services/factory.service";
+import actionsService from "../redux/services/actions.service";
 
 const Portfolio = () => {
-    const [initiatedSpads, setInitiatedSpads] = useState([])
+    const [createdSpads, setCreatedSpads] = useState([])
     const [investedSpads, setInvestedSpads] = useState([])
 
     const address = useSelector((state) => state.wallet.address);
 
     useEffect(()=> {
         async function fetchData() {
-            const spadAddresses = await spadService.getInitiatedSpads(address);
-            setInitiatedSpads(spadAddresses);
-            const spadAddresses1 = await spadService.getInvestedSpads(address);
+            const spadAddresses = await factoryService.getCreatedSpads(address);
+            setCreatedSpads(spadAddresses);
+            const spadAddresses1 = await actionsService.getContributedSpads(address);
             setInvestedSpads(spadAddresses1);
         }
 
@@ -62,21 +64,21 @@ const Portfolio = () => {
                         </Card>
                     }
                     {
-                        (initiatedSpads.length > 0) &&
+                        (createdSpads.length > 0) &&
                         <Card className="rounded color fw-bold p-4 mb-4 shadow compact">
                             <h2 className="fw-bold text-center">CREATED SPADs</h2>
                             <Table borderless className='align-middle mb-4'>
                                 <thead>
                                     <tr className="text-secondary1">
                                         <th>SPAD NAME</th>
-                                        <th>TOKEN SYMBOL</th>
+                                        <th>SPAD SYMBOL</th>
                                         <th>ADDRESS</th>
                                         <th>STATUS</th>
                                         <th>PITCHES</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                { initiatedSpads.map(function(spadAddress, i) {
+                                { createdSpads.map(function(spadAddress, i) {
                                     return <PortfolioSpad spadAddress={spadAddress} key={i} isInitiator={true} />
                                 })
                                 }
@@ -85,7 +87,7 @@ const Portfolio = () => {
                         </Card>
                     }
                     {
-                        (investedSpads.length === 0 && initiatedSpads.length === 0) &&
+                        (investedSpads.length === 0 && createdSpads.length === 0) &&
                         <div className="text-center mt-0">
                             <FaExclamationTriangle className="fs-1 text-warning mb-3 mt-5" />
                             <h2>

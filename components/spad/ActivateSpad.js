@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Button, FormControl, Modal, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import actionsService from "../../redux/services/actions.service";
 import spadService from "../../redux/services/spad.service";
 import tokensService from "../../redux/services/tokens.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
@@ -23,13 +24,13 @@ const ActivateSpad = ({ spadAddress, spad, loadSpad }) => {
             dispatch(showConnectionPopUp())
             return;
         }
-        if(spad.isPrivate) {
-            setActivationModalShow(true);
-        } else {
+        // if(spad.isPrivate) {
+        //     setActivationModalShow(true);
+        // } else {
             setActivating(true);
-            const amount = Decimal(spad.targetView).dividedBy(10);
+            const amount = Decimal(spad.target).dividedBy(10);
                         
-            const response = await spadService.activateSpad(address, spadAddress, amount, activationPitch, spad.currencyAddress);
+            const response = await actionsService.activateSpad(address, spadAddress, amount, spad.currencyAddress);
             if(response.code == 200 ) {
                 toast.success("SPAD activated successfully.")
                 loadSpad();
@@ -38,7 +39,7 @@ const ActivateSpad = ({ spadAddress, spad, loadSpad }) => {
                 toast.error("SPAD activation failed.")
             }
             setActivating(false);
-        }
+        // }
     }
 
     const handleCurrencyAllow = async() => {
@@ -95,7 +96,7 @@ const ActivateSpad = ({ spadAddress, spad, loadSpad }) => {
     return (
         <div className="spad-activate">
         {
-            spad.status === "1" && spad.spadInitiator === address &&
+            spad.status === "1" && spad.creator === address &&
             <>
             {
                 ((spad.investmentCurrency === 'ETH') || parseFloat(currencyAllowance) >= parseFloat(Decimal(spad.targetView).dividedBy(10))) ?

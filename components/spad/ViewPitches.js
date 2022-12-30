@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
+import actionsService from "../../redux/services/actions.service";
 import spadService from "../../redux/services/spad.service";
 import Pitch from "./Pitch";
 
@@ -9,7 +10,7 @@ const ViewPitches = ({ spadAddress }) => {
     useEffect( () => {
         const fetchData = async () => {
             if(spadAddress) {
-                const pitchers = await spadService.getPitchers(spadAddress);
+                const pitchers = await actionsService.getPitchers(spadAddress);
                 setPitchers(pitchers);
             }
         }

@@ -1,10 +1,14 @@
+import { ethers } from "ethers";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button, Placeholder, Spinner } from "react-bootstrap";
 import { FaDotCircle } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import actionsService from "../../redux/services/actions.service";
+import fundService from "../../redux/services/fund.service";
 import spadService from "../../redux/services/spad.service";
+import spadsService from "../../redux/services/spads.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
 import EtherScanAddress from "../EtherScanAddress";
 import ActivateSpad from "../spad/ActivateSpad";
@@ -12,6 +16,7 @@ import ActivateSpad from "../spad/ActivateSpad";
 const PortfolioSpad = ({ spadAddress, isInitiator }) => {
     const [spad, setSpad] = useState(null);
     const [claimProcessing, setClaimProcessing] = useState(false);
+    const [isClaimed, setIsClaimed] = useState(false);
 
     const dispatch = useDispatch()
     const address = useSelector((state) => state.wallet.address);
@@ -26,27 +31,29 @@ const PortfolioSpad = ({ spadAddress, isInitiator }) => {
     }
 
     const handleClaim = async () => {
-        const handleClaim = async () => {
-            if(connectionStatus !== 'CONNECTED') {
-                dispatch(showConnectionPopUp())
-                return;
-            }
-            setClaimProcessing(true);
-            const response = await spadService.claimInvestment(address, spadAddress);
-            if(response.code == 200) {
-                toast.success("Claimed investment for SPAD")
-                loadSpad();
-            } else {
-                toast.error("Problem with claiming investment for SPAD")
-            }
-            setClaimProcessing(false);
+        if(connectionStatus !== 'CONNECTED') {
+            dispatch(showConnectionPopUp())
+            return;
         }
+        setClaimProcessing(true);
+        const response = await actionsService.claimTokens(address, spadAddress);
+        if(response.code == 200) {
+            toast.success("Claimed investment for SPAD")
+            fetchData();
+        } else {
+            toast.error("Problem with claiming investment for SPAD")
+        }
+        setClaimProcessing(false);
     }
 
-    const loadSpad = () => {
-        spadService.getPortfolioSpadDetails(spadAddress, address).then((spadDetails) => {
-            setSpad(spadDetails);
-        });
+    const loadSpad = async() => {
+        const spadDetails = await spadsService.getSpadDetails(spadAddress, true);
+        setSpad(spadDetails);
+        
+        if(spadDetails.status == 5) {
+            const isClaimed = await fundService.isInvestmentClaimed(address, spadAddress);
+            setIsClaimed(isClaimed);
+        }   
     }
 
     useEffect(() => {
@@ -93,7 +100,7 @@ const PortfolioSpad = ({ spadAddress, isInitiator }) => {
                         (spad.status == 5) ?
                         <>
                         {
-                            (spad.tokenBalance > 0) ?
+                            (isClaimed > 0) ?
                             <p className="mb-0">Investment Claimed</p> :
                             <>
                             {
