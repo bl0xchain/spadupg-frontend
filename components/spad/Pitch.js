@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import actionsService from "../../redux/services/actions.service";
 import pitchService from "../../redux/services/pitch.service";
 import spadService from "../../redux/services/spad.service";
+import spadsService from "../../redux/services/spads.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
 import EtherScanAddress from "../EtherScanAddress";
 
@@ -12,6 +13,7 @@ const Pitch = ({ spadAddress, pitcher }) => {
     const [pitch, setPitch] = useState(null);
     const [review, setReview] = useState("");
     const [pitchReviewProcessing, setPitchReviewProcessing] = useState(false);
+    const [spadDetails, setSpadDetails] = useState(null);
 
     const dispatch = useDispatch()
     const address = useSelector((state) => state.wallet.address);
@@ -35,8 +37,15 @@ const Pitch = ({ spadAddress, pitcher }) => {
     }
 
     const fetchPitch = async () => {
-        const pitch = await pitchService.getPitch(pitcher, spadAddress);
-        setPitch(pitch);
+        const pitchData = await pitchService.getPitch(pitcher, spadAddress);
+        
+        if(pitchData.tokenName == "") {
+            const spadContract = spadsService.getSpadContract(spadAddress);
+            pitchData.tokenName = await spadContract.methods.name().call(); 
+            pitchData.tokenSymbol = await spadContract.methods.symbol().call();
+            pitchData.tokenAddress = "";
+        }
+        setPitch(pitchData);
     }
 
     useEffect(() => {
@@ -54,7 +63,16 @@ const Pitch = ({ spadAddress, pitcher }) => {
                 <small className="text-muted">{pitcher}</small>
                 <p className="mt-3">{pitch.description}</p>
                 <div>
-                    <p>Token: {pitch.amount} {pitch.tokenSymbol} {"  "} (<EtherScanAddress address={pitch.tokenAddress} showIcon={true} text={pitch.tokenName} />)</p>
+                    <p>
+                        <b>Token:</b> {pitch.amount} {pitch.tokenSymbol} {"  "} 
+                        (
+                            {
+                                pitch.tokenAddress == "" ?
+                                <>{pitch.tokenName}</> :
+                                <EtherScanAddress address={pitch.tokenAddress} showIcon={true} text={pitch.tokenName} />
+                            }
+                        )
+                    </p>
                 </div>
                 <div className="mt-3">
                 {

@@ -123,11 +123,12 @@ const PitchSpad = () => {
 
     return (
         <div className="main-content">
-            <h1 className="fw-bold text-center"><span className="text-color">PITCH FOR A SPAD</span></h1>
+            
             {
                 spad ?
                 <>
-                    <SpadDetailsCard spadAddress={spadAddress} spad={spad} loadSpad={loadSpad} hideActions={true} />
+                    <h1 className="fw-bold text-center">PITCH FOR <span className="text-color">{spad.name}</span></h1>
+                    
                     {
                         (spad.status == 4 && contribution == 0) ?
                         <Card className="rounded color p-4 mb-4 shadow compact">
@@ -239,8 +240,12 @@ const PitchSpad = () => {
                             <h3 className="text-danger pt-4">You Cannot Pitch for this SPAD</h3>
                         </div>
                     }
+                    <SpadDetailsCard spadAddress={spadAddress} spad={spad} loadSpad={loadSpad} hideActions={true} />
                 </> :
-                <SpadCardPlaceholder compact={true} />
+                <>
+                    <h1 className="fw-bold text-center"><span className="text-color">PITCH FOR A SPAD</span></h1>
+                    <SpadCardPlaceholder compact={true} />
+                </>
             }
         </div>
     )

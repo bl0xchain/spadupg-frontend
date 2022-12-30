@@ -40,8 +40,8 @@ const SpadCard = ({ spadAddress }) => {
             <Card className="rounded spad-card p-0 shadow-lg">
                 <div className={"spad-status "+spadStatus[spad.status]}>{spadStatus[spad.status]}</div>
                 <Card.Body>
-                    <div className="spad-name spad-label">
-                        <Link href={"/spad/"+spadAddress}>{spad.name}</Link><br />
+                    <div className="spad-name">
+                        <Link href={"/spad/"+spadAddress} className="text-color fw-bold fs-4">{spad.name}</Link><br />
                         { spad.twitterHandle && <small><a href={"https://twitter.com/"+spad.twitterHandle} target="_blank" rel="noreferrer" className="text-muted">@{spad.twitterHandle}</a></small> }
                     </div>
                     <div className="spad-symbol">{spad.symbol}</div>

@@ -10,14 +10,26 @@ export const pitchContract = new web3.eth.Contract(
 class PitchService {
     async getPitch(address, spadAddress) {
         const pitch = await pitchContract.methods.getPitch(spadAddress, address).call();
-        const tokenContract = getCurrencyContract(pitch.tokenAddress);
-        pitch.tokenName = await tokenContract.methods.name().call();
-        pitch.tokenSymbol = await tokenContract.methods.symbol().call();
-        pitch.tokenDecimals = await tokenContract.methods.decimals().call();
-        if(pitch.tokenDecimals == 18) {
-            pitch.amount = getFromDecimals("", pitch.tokenAmount);
-        } else {
-            pitch.amount = getFromDecimals("USDC", pitch.tokenAmount);
+        if(pitch.status != 0) {
+            if(pitch.tokenAddress != "0x0000000000000000000000000000000000000000") {
+                const tokenContract = getCurrencyContract(pitch.tokenAddress);
+                pitch.tokenName = await tokenContract.methods.name().call();
+                pitch.tokenSymbol = await tokenContract.methods.symbol().call();
+                pitch.tokenDecimals = await tokenContract.methods.decimals().call();
+            } else {
+                pitch.tokenName = "";
+                pitch.tokenSymbol = "";
+                pitch.tokenDecimals = 18;
+            }
+            // const tokenContract = getCurrencyContract(pitch.tokenAddress);
+            // pitch.tokenName = await tokenContract.methods.name().call();
+            // pitch.tokenSymbol = await tokenContract.methods.symbol().call();
+            // pitch.tokenDecimals = await tokenContract.methods.decimals().call();
+            if(pitch.tokenDecimals == 18) {
+                pitch.amount = getFromDecimals("", pitch.tokenAmount);
+            } else {
+                pitch.amount = getFromDecimals("USDC", pitch.tokenAmount);
+            }
         }
         return pitch;
     } 

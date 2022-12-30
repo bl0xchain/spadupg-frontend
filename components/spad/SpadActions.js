@@ -95,7 +95,7 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
                         {
                             spad.creator === address ?
                             <p className="fw-bold">
-                            You have approved the pitch of <EtherScanAddress address={spad.acquiredBy} /> and {" "}
+                            You have approved the pitch of <span className="text-color" style={{textDecoration: 'underline'}}><EtherScanAddress address={spad.acquiredBy} /></span>  and {" "}
                             {spad.targetView} {" "} {spad.investmentCurrency} has been transfered to pitcher account.
                             </p> :
                             <>
@@ -106,7 +106,7 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
                                     {spad.targetView} {" "} {spad.investmentCurrency} has been transfered to your account.
                                 </p> :
                                 <p className="fw-bold">
-                                   The SPAD is aquired by <EtherScanAddress address={spad.acquiredBy} />
+                                   The SPAD is aquired by <span className="text-color"><EtherScanAddress address={spad.acquiredBy} /></span>
                                 </p>
                             }
                             </>

@@ -6,6 +6,7 @@ import actionsService from "../../redux/services/actions.service";
 import spadService from "../../redux/services/spad.service";
 import { getFromDecimals } from "../../redux/services/tokens.service";
 import { getShortAddress } from "../../redux/utils";
+import EtherScanAddress from "../EtherScanAddress";
 import Share from "./Share";
 
 const Participants = ({ spadAddress, spad }) => {
@@ -66,7 +67,9 @@ const Participants = ({ spadAddress, spad }) => {
                             <td style={{position: "relative"}}>
                                 <Image src='/spad-link-icon.png' alt="|" width={24} height={44} />
                             </td>
-                            <td>{ getShortAddress(event.address) }</td>
+                            <td>
+                                <EtherScanAddress address={event.address} showIcon={true} />
+                            </td>
                             {/* <td> {event.tokens} </td> */}
                             <td>
                                 {event.amount} {" "}
