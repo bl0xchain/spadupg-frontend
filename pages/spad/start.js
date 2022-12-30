@@ -37,7 +37,7 @@ const Start = () => {
             dispatch(showConnectionPopUp())
             return;
         }
-        if(name === '' || tokenSymbol === '' || target === '' || minInvestment === '' || maxInvestment === '' || totalSupply === '') {
+        if(name === '' || tokenSymbol === '' || target === '' || minInvestment === '' || maxInvestment === '') {
             setErrorMsg("All fields are compulsory");
             return;
         }
