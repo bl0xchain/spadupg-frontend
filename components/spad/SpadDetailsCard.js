@@ -8,7 +8,7 @@ import Share from "./Share";
 import SpadActions from "./SpadActions";
 
 const SpadDetailsCard = ({ spadAddress, spad, loadSpad, hideActions }) => {
-    const [initiatorContriPct, setInitiatorContriPct] = useState(10)
+    const [creatorContriPct, setCreatorContriPct] = useState(10)
     const spadStatus = {
         1: 'pending',
         2: 'open',
@@ -17,14 +17,14 @@ const SpadDetailsCard = ({ spadAddress, spad, loadSpad, hideActions }) => {
         5: 'acquired'
     }
 
-    const getInitiatorContriPct = async() => {
-        if(spad.initiatorContribution > 0) {
-            setInitiatorContriPct((Math.round((spad.initiatorContribution / spad.targetView) * 10000) / 100));
+    const getCreatorContriPct = async() => {
+        if(spad.creatorContribution > 0) {
+            setCreatorContriPct((Math.round((spad.creatorContributionView / spad.targetView) * 10000) / 100));
         }
     }
 
     useEffect(() => {
-        getInitiatorContriPct()
+        getCreatorContriPct()
     }, [])
 
     return (
@@ -48,7 +48,7 @@ const SpadDetailsCard = ({ spadAddress, spad, loadSpad, hideActions }) => {
                 </li>
                 <li className="list-inline-item">
                     <FaUser /> {" "}
-                    <EtherScanAddress address={spad.spadInitiator} showIcon={true} />
+                    <EtherScanAddress address={spad.creator} showIcon={true} />
                 </li>
                 <li className="list-inline-item">
                     <FaShieldAlt /> {" "}
@@ -65,14 +65,14 @@ const SpadDetailsCard = ({ spadAddress, spad, loadSpad, hideActions }) => {
                     SPAD CREATOR
                 </Col>
                 <Col sm="3 fw-bold">
-                    <EtherScanAddress address={spad.spadInitiator} showIcon={true} />
+                    <EtherScanAddress address={spad.creator} showIcon={true} />
                 </Col>
                 <Col sm="6">
                     {/* {
                         props.spad.twitterHandle === '' ?
                         <>
                             {
-                                address === props.spad.spadInitiator && 
+                                address === props.spad.creator && 
                                 <>
                                 <TwitterVerification />
                                 </>
@@ -91,7 +91,7 @@ const SpadDetailsCard = ({ spadAddress, spad, loadSpad, hideActions }) => {
                     DTS SCORE
                 </Col>
                 <Col sm="5 fw-bold">
-                    <iframe src={"https://dts-app-umber.vercel.app/score?address="+spad.spadInitiator} height="28" scrolling="no" />
+                    <iframe src={"https://dts-app-umber.vercel.app/score?address="+spad.creator} height="28" scrolling="no" />
                 </Col>
             </Row>
             <Row className="mb-4 align-items-center">
@@ -116,13 +116,13 @@ const SpadDetailsCard = ({ spadAddress, spad, loadSpad, hideActions }) => {
                 </Col>
                 <Col sm="9">
                     {
-                        (spad.initiatorContribution > 0) ?
+                        (spad.creatorContribution > 0) ?
                         <ProgressBar>
-                            <ProgressBar now={initiatorContriPct} key={1} variant="success1" title="SPAD Creator Contribution" />
-                            <ProgressBar now={(Number(spad.currentInvstPercent) - Number(initiatorContriPct))} key={2} variant="color" />
+                            <ProgressBar now={creatorContriPct} key={1} variant="success1" title="SPAD Creator Contribution" />
+                            <ProgressBar now={(Number(spad.currentInvstPercent) - Number(creatorContriPct))} key={2} variant="color" />
                         </ProgressBar> : 
                         <ProgressBar>
-                            <ProgressBar now={initiatorContriPct} key={1} variant="secondary1" />
+                            <ProgressBar now={creatorContriPct} key={1} variant="secondary1" />
                         </ProgressBar>
                     }
                     <Row className={styles.ContributionText}>

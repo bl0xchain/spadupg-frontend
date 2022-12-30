@@ -11,7 +11,7 @@ const EtherScanAddress = ({ address, showIcon, text }) => {
                 <>{ getShortAddress(address) }</>
             }
             {" "}
-            { showIcon && <FaExternalLinkAlt /> }
+            { showIcon && <FaExternalLinkAlt style={{fontSize: '0.9rem', paddingBottom: '2px'}} /> }
         </Link>
     )
 }

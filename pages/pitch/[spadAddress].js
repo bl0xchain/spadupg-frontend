@@ -1,11 +1,16 @@
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { Button, Card, Form, Spinner } from "react-bootstrap";
+import { Button, Card, Col, Form, Row, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import SpadCardPlaceholder from "../../components/spad/SpadCardPlaceholder";
 import SpadDetailsCard from "../../components/spad/SpadDetailsCard";
-import spadService from "../../redux/services/spad.service";
+import actionsService from "../../redux/services/actions.service";
+import fundService from "../../redux/services/fund.service";
+import pitchService from "../../redux/services/pitch.service";
+import spadsService from "../../redux/services/spads.service";
+import { getCurrencyContract, getDecimals, getFromDecimals } from "../../redux/services/tokens.service";
+// import spadService from "../../redux/services/spad.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
 
 const PitchSpad = () => {
@@ -18,6 +23,9 @@ const PitchSpad = () => {
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
+    const [tokenType, setTokenType] = useState('');
+    const [tokenAddress, setTokenAddress] = useState("");
+    const [tokenAmount, setTokenAmount] = useState("");
     const [errorMsg, setErrorMsg] = useState("");
     const [pitchProcessing, setPitchProcessing] = useState(false);
 
@@ -26,7 +34,7 @@ const PitchSpad = () => {
     const connectionStatus = useSelector((state) => state.wallet.status);
 
     const loadSpad = async() => {
-        const spadDetails = await spadService.getSpadDetails(spadAddress);
+        const spadDetails = await spadsService.getSpadDetails(spadAddress);
         setSpad(spadDetails);
     }
 
@@ -37,14 +45,49 @@ const PitchSpad = () => {
             return;
         }
         setPitchProcessing(true);
-        if(name === '' || description === '') {
+        if(name === '' || description === '' || tokenAmount === '' || tokenType === '') {
             setErrorMsg("All fields are compulsory");
             setPitchProcessing(false);
             return;
         }
-        const response = await spadService.pitchForSPAD(address, spadAddress, name, description);
+        let amount = 0;
+        if(tokenType === 'external_token') {
+            if(tokenAddress === "") {
+                setErrorMsg("Please enter token address");
+                setPitchProcessing(false);
+                return;
+            }
+            const tokenContract = getCurrencyContract(tokenAddress);
+            try {
+                const balance = await tokenContract.methods.balanceOf(address).call({
+                    from: address
+                });
+                if(balance > 0) {
+                    setErrorMsg("Make sure you have token balance");
+                    setPitchProcessing(false);
+                    return;
+                }
+            } catch (error) {
+                setErrorMsg("Please enter valid token address");
+                setPitchProcessing(false);
+                return;
+            }
+            const decimals = await tokenContract.methods.decimals().call({from: address});
+            if(decimals == 18) {
+                amount = getDecimals("", tokenAmount);
+            } else if(decimals == 6) {
+                amount = getDecimals("USDC", tokenAmount);
+            } else {
+                setErrorMsg("Token decimals should be 18 or 6");
+                setPitchProcessing(false);
+                return;
+            }
+        } else {
+            amount = getDecimals("", tokenAmount);
+        }
+        const response = await actionsService.pitchSpad(address, spadAddress, name, description, tokenAddress, amount);
         if(response.code == 200) {
-            const pitch = await spadService.getPitch(address, spadAddress);
+            const pitch = await pitchService.getPitch(address, spadAddress);
             setPitch(pitch);
             toast.success("Pitch Proposed successfully")
         } else {
@@ -57,10 +100,12 @@ const PitchSpad = () => {
         console.log('load contribution')
         if(address && spad && spadAddress)
         {
-            const contrib = await spadService.getContribution(address, spad.currencyAddress, spadAddress);
-            setContribution(contrib);
-            if(contrib === 0) {
-                const pitch = await spadService.getPitch(address, spadAddress);
+            // const contrib = await spadService.getContribution(address, spad.currencyAddress, spadAddress);
+            const contrib = await fundService.getContribution(address, spadAddress);
+            setContribution(parseFloat(getFromDecimals(spad.currencyAddress, contrib)));
+            console.log(contrib);
+            if(contrib == 0) {
+                const pitch = await pitchService.getPitch(address, spadAddress);
                 setPitch(pitch);
             }
         }
@@ -110,6 +155,44 @@ const PitchSpad = () => {
                                                 onChange={(e) => {setErrorMsg("");setDescription(e.target.value)}}
                                             />
                                         </Form.Group>
+                                        <div className="mb-5">
+                                            <label className="form-label">Token Details for Distribution (ERC20)</label>
+                                            <Row className="align-items-center">
+                                                <Col onChange={(e) => setTokenType(e.target.value)}>
+                                                    <Form.Check
+                                                        inline
+                                                        label={`${spad.symbol} Token`}
+                                                        name="token_type"
+                                                        type='radio'
+                                                        id="spad-token"
+                                                        value="spad_token"
+                                                    />
+                                                    <Form.Check
+                                                        inline
+                                                        label={`External Token`}
+                                                        name="token_type"
+                                                        type='radio'
+                                                        id="external-token"
+                                                        value="external_token"
+                                                    />
+                                                </Col>
+                                                {
+                                                    tokenType == 'external_token' &&
+                                                    <Col>
+                                                        <Form.Control type="text" placeholder="Token Address" 
+                                                            value={tokenAddress}
+                                                            onChange={(e) => {setErrorMsg("");setTokenAddress(e.target.value)}}
+                                                        />
+                                                    </Col>
+                                                }
+                                                <Col>
+                                                    <Form.Control type="number" placeholder="Token Amount" 
+                                                        value={tokenAmount}
+                                                        onChange={(e) => {setErrorMsg("");setTokenAmount(e.target.value)}}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        </div>
                                         {
                                             
                                             pitchProcessing ?

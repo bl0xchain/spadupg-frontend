@@ -5,10 +5,11 @@ import spadService from "../../redux/services/spad.service";
 import SpadCardPlaceholder from "./SpadCardPlaceholder";
 import Decimal from "decimal.js-light";
 import SpadActions from "./SpadActions";
+import spadsService from "../../redux/services/spads.service";
 
 const SpadCard = ({ spadAddress }) => {
     const [spad, setSpad] = useState(null)
-    const [initiatorContriPct, setInitiatorContriPct] = useState(10)
+    const [creatorContriPct, setCreatorContriPct] = useState(10)
 
     const spadStatus = {
         1: 'pending',
@@ -19,10 +20,11 @@ const SpadCard = ({ spadAddress }) => {
     }
 
     const loadSpad = async() => {
-        const spadDetails = await spadService.getSpadDetails(spadAddress);
+        // const spadDetails = await spadService.getSpadDetails(spadAddress);
+        const spadDetails = await spadsService.getSpadDetails(spadAddress, true);
         setSpad(spadDetails);
-        if(spadDetails.initiatorContribution > 0) {
-            setInitiatorContriPct((Math.round((spadDetails.initiatorContribution / spadDetails.targetView) * 10000) / 100));
+        if(spadDetails.creatorContribution > 0) {
+            setCreatorContriPct((Math.round((spadDetails.creatorContributionView / spadDetails.targetView) * 10000) / 100));
         }
     }
 
@@ -46,13 +48,13 @@ const SpadCard = ({ spadAddress }) => {
                     <div className="mb-4 mt-4">
                         
                             {
-                                (spad.initiatorContribution > 0) ?
+                                (spad.creatorContribution > 0) ?
                                 <ProgressBar>
-                                    <ProgressBar now={initiatorContriPct} key={1} variant="success1" title="SPAD Creator Contribution" />
-                                    <ProgressBar now={(Number(spad.currentInvstPercent) - Number(initiatorContriPct))} key={2} variant="color" />
+                                    <ProgressBar now={creatorContriPct} key={1} variant="success1" title="SPAD Creator Contribution" />
+                                    <ProgressBar now={(Number(spad.currentInvstPercent) - Number(creatorContriPct))} key={2} variant="color" />
                                 </ProgressBar> : 
                                 <ProgressBar>
-                                    <ProgressBar now={initiatorContriPct} key={1} variant="secondary1" />
+                                    <ProgressBar now={creatorContriPct} key={1} variant="secondary1" />
                                 </ProgressBar>
                             }
                         

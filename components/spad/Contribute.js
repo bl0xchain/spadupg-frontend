@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, InputGroup, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
-import spadService from "../../redux/services/spad.service";
-import tokensService from "../../redux/services/tokens.service";
+import actionsService from "../../redux/services/actions.service";
+import fundService from "../../redux/services/fund.service";
+// import spadService from "../../redux/services/spad.service";
+import tokensService, { getFromDecimals } from "../../redux/services/tokens.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
 import PassKeyModal from "./PassKeyModal";
 
@@ -24,8 +26,8 @@ const Contribute = ({ spadAddress, spad, loadSpad }) => {
     const connectionStatus = useSelector((state) => state.wallet.status);
 
     const updateContribution = useCallback(async() => {
-        const amount = await spadService.getContribution(address, spad.currencyAddress, spadAddress);
-        setContribution(amount);
+        const amount = await fundService.getContribution(address, spadAddress);
+        setContribution(parseFloat(getFromDecimals(spad.currencyAddress, amount)));
     }, [address]);
 
     const handleContribute = async() => {
@@ -47,11 +49,22 @@ const Contribute = ({ spadAddress, spad, loadSpad }) => {
                 } else {
                     setAllowanceNeeded(false);
                 }
-                if(spad.isPrivate) {
-                    setPassKeyModalShow(true);
+                // if(spad.isPrivate) {
+                //     setPassKeyModalShow(true);
+                // } else {
+                //     handlePassKeyContribute();
+                // }
+                setContributing(true);
+                const response = await actionsService.contribute(address, spadAddress, contributionAmount, spad.currencyAddress);
+                if(response.code == 200) {
+                    toast.success("Contributed for SPAD successfully")
+                    updateContribution();
+                    setIsContribute(false);
+                    loadSpad();
                 } else {
-                    handlePassKeyContribute();
+                    toast.error("Problem with contributing for SPAD")
                 }
+                setContributing(false);
             } else {
                 setErrorMsg('Contribution must be between '+minContributionNeeded+' '+spad.investmentCurrency+' to '+spad.maxInvestmentView+' '+spad.investmentCurrency);
                 setContributing(false);

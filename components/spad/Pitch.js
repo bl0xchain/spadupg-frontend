@@ -2,8 +2,11 @@ import { useEffect, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import actionsService from "../../redux/services/actions.service";
+import pitchService from "../../redux/services/pitch.service";
 import spadService from "../../redux/services/spad.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
+import EtherScanAddress from "../EtherScanAddress";
 
 const Pitch = ({ spadAddress, pitcher }) => {
     const [pitch, setPitch] = useState(null);
@@ -21,7 +24,7 @@ const Pitch = ({ spadAddress, pitcher }) => {
         }
         setPitchReviewProcessing(true);
         setReview(approval);
-        const response = await spadService.pitchApproval(address, spadAddress, pitcher, approval)
+        const response = await actionsService.pitchReview(address, spadAddress, pitcher, approval)
         if(response.code == 200) {
             toast.success("Pitch review completed")
             fetchPitch();
@@ -32,7 +35,7 @@ const Pitch = ({ spadAddress, pitcher }) => {
     }
 
     const fetchPitch = async () => {
-        const pitch = await spadService.getPitch(pitcher, spadAddress);
+        const pitch = await pitchService.getPitch(pitcher, spadAddress);
         setPitch(pitch);
     }
 
@@ -49,7 +52,10 @@ const Pitch = ({ spadAddress, pitcher }) => {
             <>
                 <h5 className="mb-0">{pitch.name}</h5>
                 <small className="text-muted">{pitcher}</small>
-                <p className="mb-0 mt-3">{pitch.description}</p>
+                <p className="mt-3">{pitch.description}</p>
+                <div>
+                    <p>Token: {pitch.amount} {pitch.tokenSymbol} {"  "} (<EtherScanAddress address={pitch.tokenAddress} showIcon={true} text={pitch.tokenName} />)</p>
+                </div>
                 <div className="mt-3">
                 {
                     pitch.status === '1' ?

@@ -6,6 +6,7 @@ import SpadCardPlaceholder from "../../../components/spad/SpadCardPlaceholder";
 import SpadDetailsCard from "../../../components/spad/SpadDetailsCard";
 import ViewPitches from "../../../components/spad/ViewPitches";
 import spadService from "../../../redux/services/spad.service";
+import spadsService from "../../../redux/services/spads.service";
 
 const SpadPitches = () => {
     const router = useRouter()
@@ -16,7 +17,7 @@ const SpadPitches = () => {
     const address = useSelector((state) => state.wallet.address);
 
     const loadSpad = async() => {
-        const spadDetails = await spadService.getSpadDetails(spadAddress);
+        const spadDetails = await spadsService.getSpadDetails(spadAddress, true);
         setSpad(spadDetails);
     }
 
@@ -32,7 +33,7 @@ const SpadPitches = () => {
             spad ?
             <>
             {
-                spad.spadInitiator === address ?
+                spad.creator === address ?
                 <>
                     <SpadDetailsCard spadAddress={spadAddress} spad={spad} loadSpad={loadSpad} />
                     <hr className='mb-4' />

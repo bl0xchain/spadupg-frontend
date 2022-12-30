@@ -1,10 +1,13 @@
+import { ethers } from "ethers";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import actionsService from "../../redux/services/actions.service";
+import fundService from "../../redux/services/fund.service";
 import spadService from "../../redux/services/spad.service";
-import tokensService from "../../redux/services/tokens.service";
+import tokensService, { getFromDecimals } from "../../redux/services/tokens.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
 import { getShortAddress } from "../../redux/utils";
 import EtherScanAddress from "../EtherScanAddress";
@@ -18,20 +21,20 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
 
     const [contribution, setContribution] = useState("");
 
-    // const [isClaimed, setIsClaimed] = useState(false);
+    const [isClaimed, setIsClaimed] = useState(false);
     const [claimProcessing, setClaimProcessing] = useState(false);
     const [claimedTokens, setClaimedTokens] = useState(0);
 
     const fetchData = async() => {
-        const contrib = await spadService.getContribution(address, spad.currencyAddress, spadAddress);
-        setContribution(contrib);
+        const contrib = await fundService.getContribution(address, spadAddress);
+        setContribution(parseFloat(getFromDecimals(spad.currencyAddress, contrib)));
         if(spad.status == 5 && contrib > 0) {
-            // const isClaimed = await spadService.isInvestmentClaimed(address, spadAddress);
-            // setIsClaimed(isClaimed);
-            // if(isClaimed) {
-            const tokenBalance = await tokensService.getTokenBalance(address, spadAddress, spad.currencyAddress);
-            setClaimedTokens(tokenBalance);
-            // }
+            const isClaimed = await fundService.isInvestmentClaimed(address, spadAddress);
+            setIsClaimed(isClaimed);
+            if(isClaimed) {
+                const tokens = await actionsService.getClaimedTokens(address, spadAddress);
+                setClaimedTokens(ethers.utils.formatUnits(tokens, spad.pitch.tokenDecimals));
+            }
         }
     }
 
@@ -41,7 +44,7 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
             return;
         }
         setClaimProcessing(true);
-        const response = await spadService.claimInvestment(address, spadAddress);
+        const response = await actionsService.claimTokens(address, spadAddress);
         if(response.code == 200) {
             toast.success("Claimed investment for SPAD")
             fetchData();
@@ -63,7 +66,7 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
             spad.status === "1" ?
             <>
             {
-                spad.spadInitiator === address ?
+                spad.creator === address ?
                 <ActivateSpad spadAddress={spadAddress} spad={spad} loadSpad={loadSpad} /> :
                 <p className="mb-0 text-warning">SPAD is not yet activated</p>
             }
@@ -90,7 +93,7 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
                         spad.status === "5" &&
                         <>
                         {
-                            spad.spadInitiator === address ?
+                            spad.creator === address ?
                             <p className="fw-bold">
                             You have approved the pitch of <EtherScanAddress address={spad.acquiredBy} /> and {" "}
                             {spad.targetView} {" "} {spad.investmentCurrency} has been transfered to pitcher account.
@@ -114,7 +117,7 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
                         contribution > 0 &&
                         <>
                         {
-                            claimedTokens > 0 ?
+                            isClaimed ?
                             <p className="text-success1 mb-0">You have claimed your <b>{claimedTokens} {" "} {spad.symbol}</b> tokens </p> :
                             <div>
                             {
