@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Button, Card, Col, Form, Row, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import EtherScanAddress from "../../components/EtherScanAddress";
 import SpadCardPlaceholder from "../../components/spad/SpadCardPlaceholder";
 import SpadDetailsCard from "../../components/spad/SpadDetailsCard";
 import actionsService from "../../redux/services/actions.service";
@@ -130,7 +131,7 @@ const PitchSpad = () => {
                     <h1 className="fw-bold text-center">PITCH FOR <span className="text-color">{spad.name}</span></h1>
                     
                     {
-                        (spad.status == 4 && contribution == 0) ?
+                        ((spad.status == 4 || spad.status == 5) && contribution == 0) ?
                         <Card className="rounded color p-4 mb-4 shadow compact">
                             <Card.Body className="text-center">
                             {
@@ -141,67 +142,74 @@ const PitchSpad = () => {
                                 <>
                                 {
                                     pitch.status === '0' ?
-                                    <div>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Name</Form.Label>
-                                            <Form.Control type="text" placeholder="Name of Project" 
-                                                value={name}
-                                                onChange={(e) => {setErrorMsg("");setName(e.target.value)}}
-                                            />
-                                        </Form.Group>
-                                        <Form.Group className="mb-3">
-                                            <Form.Label>Description</Form.Label>
-                                            <Form.Control as="textarea" rows={5} 
-                                                value={description}
-                                                onChange={(e) => {setErrorMsg("");setDescription(e.target.value)}}
-                                            />
-                                        </Form.Group>
-                                        <div className="mb-5">
-                                            <label className="form-label">Token Details for Distribution (ERC20)</label>
-                                            <Row className="align-items-center">
-                                                <Col onChange={(e) => setTokenType(e.target.value)}>
-                                                    <Form.Check
-                                                        inline
-                                                        label={`${spad.symbol} Token`}
-                                                        name="token_type"
-                                                        type='radio'
-                                                        id="spad-token"
-                                                        value="spad_token"
-                                                    />
-                                                    <Form.Check
-                                                        inline
-                                                        label={`External Token`}
-                                                        name="token_type"
-                                                        type='radio'
-                                                        id="external-token"
-                                                        value="external_token"
-                                                    />
-                                                </Col>
-                                                {
-                                                    tokenType == 'external_token' &&
-                                                    <Col>
-                                                        <Form.Control type="text" placeholder="Token Address" 
-                                                            value={tokenAddress}
-                                                            onChange={(e) => {setErrorMsg("");setTokenAddress(e.target.value)}}
+                                    <>{
+                                        spad.status == 5 ?
+                                        <div className="compact text-center">
+                                            <h3 className="text-danger pt-4">This SPAD is already acquired. You Cannot Pitch for this SPAD</h3>
+                                        </div> :
+                                        <div>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Name</Form.Label>
+                                                <Form.Control type="text" placeholder="Name of Project" 
+                                                    value={name}
+                                                    onChange={(e) => {setErrorMsg("");setName(e.target.value)}}
+                                                />
+                                            </Form.Group>
+                                            <Form.Group className="mb-3">
+                                                <Form.Label>Description</Form.Label>
+                                                <Form.Control as="textarea" rows={5} 
+                                                    value={description}
+                                                    onChange={(e) => {setErrorMsg("");setDescription(e.target.value)}}
+                                                />
+                                            </Form.Group>
+                                            <div className="mb-5">
+                                                <label className="form-label">Token Details for Distribution (ERC20)</label>
+                                                <Row className="align-items-center">
+                                                    <Col onChange={(e) => setTokenType(e.target.value)}>
+                                                        <Form.Check
+                                                            inline
+                                                            label={`${spad.symbol} Token`}
+                                                            name="token_type"
+                                                            type='radio'
+                                                            id="spad-token"
+                                                            value="spad_token"
+                                                        />
+                                                        <Form.Check
+                                                            inline
+                                                            label={`External Token`}
+                                                            name="token_type"
+                                                            type='radio'
+                                                            id="external-token"
+                                                            value="external_token"
                                                         />
                                                     </Col>
-                                                }
-                                                <Col>
-                                                    <Form.Control type="number" placeholder="Token Amount" 
-                                                        value={tokenAmount}
-                                                        onChange={(e) => {setErrorMsg("");setTokenAmount(e.target.value)}}
-                                                    />
-                                                </Col>
-                                            </Row>
+                                                    {
+                                                        tokenType == 'external_token' &&
+                                                        <Col>
+                                                            <Form.Control type="text" placeholder="Token Address" 
+                                                                value={tokenAddress}
+                                                                onChange={(e) => {setErrorMsg("");setTokenAddress(e.target.value)}}
+                                                            />
+                                                        </Col>
+                                                    }
+                                                    <Col>
+                                                        <Form.Control type="number" placeholder="Token Amount" 
+                                                            value={tokenAmount}
+                                                            onChange={(e) => {setErrorMsg("");setTokenAmount(e.target.value)}}
+                                                        />
+                                                    </Col>
+                                                </Row>
+                                            </div>
+                                            {
+                                                
+                                                pitchProcessing ?
+                                                <Button variant="color" disabled>PITCHING {" "} <Spinner animation="border" size="sm" /></Button> :
+                                                <Button variant="color" onClick={handlePitch}>PITCH</Button>
+                                                        
+                                            }
                                         </div>
-                                        {
-                                            
-                                            pitchProcessing ?
-                                            <Button variant="color" disabled>PITCHING {" "} <Spinner animation="border" size="sm" /></Button> :
-                                            <Button variant="color" onClick={handlePitch}>PITCH</Button>
-                                                    
-                                        }
-                                    </div> :
+                                    }</>
+                                     :
                                     <div className="mt-3">
                                         <dl className="row text-start">
                                             <dt className="col-sm-3">Name</dt>
@@ -225,6 +233,19 @@ const PitchSpad = () => {
                                                     }
                                                     </div>
                                                 }
+                                            </dd>
+                                        </dl>
+                                        <dl className="row text-start">
+                                            <dt className="col-sm-3">Token</dt>
+                                            <dd className="col-sm-9">
+                                                {pitch.amount} {pitch.tokenSymbol} {"  "} 
+                                                (
+                                                    {
+                                                        pitch.tokenAddress == "" ?
+                                                        <>{pitch.tokenName}</> :
+                                                        <EtherScanAddress address={pitch.tokenAddress} showIcon={true} text={pitch.tokenName} />
+                                                    }
+                                                )
                                             </dd>
                                         </dl>
                                     </div>

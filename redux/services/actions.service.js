@@ -168,6 +168,19 @@ class ActionsService {
         })
         return spadAddresses.reverse();
     }
+
+    async getPitchedSpads(address) {
+        const spadAddresses = [];
+        const spads = await actionsContract.getPastEvents('PitchProposed', {
+            filter: { pitcher: address },
+            fromBlock: 0,
+            toBlock: 'latest'
+        });
+        spads.forEach((event) => {
+            spadAddresses.push(event.returnValues.spadAddress);
+        })
+        return spadAddresses.reverse();
+    }
 }
 
 export default new ActionsService();
