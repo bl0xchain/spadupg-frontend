@@ -12,6 +12,7 @@ import actionsService from "../redux/services/actions.service";
 const Portfolio = () => {
     const [createdSpads, setCreatedSpads] = useState([])
     const [investedSpads, setInvestedSpads] = useState([])
+    const [pitchedSpads, setPitchedSpads] = useState([])
 
     const address = useSelector((state) => state.wallet.address);
 
@@ -21,6 +22,8 @@ const Portfolio = () => {
             setCreatedSpads(spadAddresses);
             const spadAddresses1 = await actionsService.getContributedSpads(address);
             setInvestedSpads(spadAddresses1);
+            const spadAddresses2 = await actionsService.getPitchedSpads(address);
+            setPitchedSpads(spadAddresses2);
         }
 
         if(address !== '') {
@@ -74,7 +77,7 @@ const Portfolio = () => {
                                         <th>SPAD SYMBOL</th>
                                         <th>ADDRESS</th>
                                         <th>STATUS</th>
-                                        <th>PITCHES</th>
+                                        <th>ACTIONS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -87,7 +90,30 @@ const Portfolio = () => {
                         </Card>
                     }
                     {
-                        (investedSpads.length === 0 && createdSpads.length === 0) &&
+                        (pitchedSpads.length > 0) &&
+                        <Card className="rounded color fw-bold p-4 mb-4 shadow compact">
+                            <h2 className="fw-bold text-center">PITCHED SPADs</h2>
+                            <Table borderless className='align-middle mb-4'>
+                                <thead>
+                                    <tr className="text-secondary1">
+                                        <th>SPAD NAME</th>
+                                        <th>SPAD SYMBOL</th>
+                                        <th>ADDRESS</th>
+                                        <th>STATUS</th>
+                                        <th>PITCHES</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                { pitchedSpads.map(function(spadAddress, i) {
+                                    return <PortfolioSpad spadAddress={spadAddress} key={i} isPitcher={true} />
+                                })
+                                }
+                                </tbody>
+                            </Table>
+                        </Card>
+                    }
+                    {
+                        (investedSpads.length === 0 && createdSpads.length === 0 && pitchedSpads.length === 0) &&
                         <div className="text-center mt-0">
                             <FaExclamationTriangle className="fs-1 text-warning mb-3 mt-5" />
                             <h2>

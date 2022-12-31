@@ -13,7 +13,7 @@ import { showConnectionPopUp } from "../../redux/slices/walletSlice";
 import EtherScanAddress from "../EtherScanAddress";
 import ActivateSpad from "../spad/ActivateSpad";
 
-const PortfolioSpad = ({ spadAddress, isInitiator }) => {
+const PortfolioSpad = ({ spadAddress, isInitiator, isPitcher }) => {
     const [spad, setSpad] = useState(null);
     const [claimProcessing, setClaimProcessing] = useState(false);
     const [isClaimed, setIsClaimed] = useState(false);
@@ -97,27 +97,34 @@ const PortfolioSpad = ({ spadAddress, isInitiator }) => {
                     </> :
                     <>
                     {
-                        (spad.status == 5) ?
+                        isPitcher ?
+                        <Link className="btn btn-color" href={`pitch/${spadAddress}`}>View Pitch</Link> :
                         <>
                         {
-                            (isClaimed > 0) ?
-                            <p className="mb-0">Investment Claimed</p> :
+                            (spad.status == 5) ?
                             <>
                             {
-                                claimProcessing ?
-                                <Button variant="color" disabled>
-                                    Claiming Tokens { ' ' } <Spinner animation="border" size="sm" />
-                                </Button> :
-                                <Button variant="color" onClick={handleClaim}>
-                                    Claim Tokens
-                                </Button>   
+                                (isClaimed > 0) ?
+                                <p className="mb-0">Investment Claimed</p> :
+                                <>
+                                {
+                                    claimProcessing ?
+                                    <Button variant="color" disabled>
+                                        Claiming Tokens { ' ' } <Spinner animation="border" size="sm" />
+                                    </Button> :
+                                    <Button variant="color" onClick={handleClaim}>
+                                        Claim Tokens
+                                    </Button>   
+                                }
+                                </>
                             }
                             </>
+                            :
+                            <p className="mb-0">Cannot Claim yet</p>
                         }
                         </>
-                        :
-                        <p className="mb-0">Cannot Claim yet</p>
                     }
+                    
                     </>
                 }
                 </td>
