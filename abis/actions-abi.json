@@ -175,6 +175,21 @@
                 "internalType": "address",
                 "name": "spadAddress",
                 "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "pitchDetails",
+                "type": "string"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokenAmount",
+                "type": "uint256"
             }
         ],
         "name": "activateSpad",
@@ -188,6 +203,11 @@
                 "internalType": "address",
                 "name": "spadAddress",
                 "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "passKey",
+                "type": "string"
             }
         ],
         "name": "addSpad",
@@ -232,6 +252,11 @@
                 "internalType": "uint256",
                 "name": "amount",
                 "type": "uint256"
+            },
+            {
+                "internalType": "string",
+                "name": "passKey",
+                "type": "string"
             }
         ],
         "name": "contribute",
@@ -397,6 +422,11 @@
             {
                 "internalType": "address",
                 "name": "_pitchAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_privacyAddress",
                 "type": "address"
             }
         ],

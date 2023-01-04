@@ -4,6 +4,7 @@ import { Card, Col, Placeholder, Row, Spinner } from "react-bootstrap";
 import Confetti from "react-confetti";
 import Moment from "react-moment";
 import EtherScanAddress from "../../../components/EtherScanAddress";
+import CreatorPitch from "../../../components/spad/CreatorPitch";
 import Participants from "../../../components/spad/Participants";
 import SpadCardPlaceholder from "../../../components/spad/SpadCardPlaceholder";
 import SpadDetailsCard from "../../../components/spad/SpadDetailsCard";
@@ -50,7 +51,7 @@ const Spad = () => {
                 }
                 
                 <SpadDetailsCard spadAddress={spadAddress} spad={spad} loadSpad={loadSpad} />
-                <Card className="rounded color fw-bold p-4 mb-4 shadow compact">
+                {/* <Card className="rounded color fw-bold p-4 mb-4 shadow compact">
                     <h2 className="fw-bold mb-4">SPAD DETAILS</h2>
                     <Row>
                         <Col sm="6">
@@ -91,7 +92,11 @@ const Spad = () => {
                             }      
                         </Col>
                     </Row>
-                </Card>
+                </Card> */}
+                {
+                    spad.isPrivate &&
+                    <CreatorPitch spadAddress={spadAddress} creator={spad.creator} />
+                }
                 <hr className='mb-4' />
                 <Participants spadAddress={spadAddress} spad={spad} />
             </div> :

@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import Forbidden from "../../../components/Forbidden";
+import CreatorPitch from "../../../components/spad/CreatorPitch";
 import SpadCardPlaceholder from "../../../components/spad/SpadCardPlaceholder";
 import SpadDetailsCard from "../../../components/spad/SpadDetailsCard";
 import ViewPitches from "../../../components/spad/ViewPitches";
@@ -39,7 +40,12 @@ const SpadPitches = () => {
                     <hr className='mb-4' />
                     <div className='compact'>
                         <h2 className="fw-bold mb-4">PITCHES</h2>
-                        <ViewPitches spadAddress={spadAddress} />
+                        {
+                            spad.isPrivate ? 
+                            <CreatorPitch spadAddress={spadAddress} creator={spad.creator} /> :
+                            <ViewPitches spadAddress={spadAddress} />
+                        }
+                        
                     </div>
                 </> :
                 <Forbidden />
