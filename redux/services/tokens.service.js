@@ -1,5 +1,6 @@
 import web3 from "../web3";
-import { actionContractAddress } from "./spad.service";
+import { actionsContractAddress } from "./actions.service";
+
 const contractERC20ABI = require("../../abis/erc20-abi.json");
 
 export const usdcContractAddress = "0x98339D8C260052B7ad81c28c16C0b98420f2B46a";
@@ -53,7 +54,7 @@ class TokensService {
     
     async getCurrencyAllowance(address, currencyAddress) {
         const contract = getCurrencyContract(currencyAddress);
-        const allowance = await contract.methods.allowance(address, actionContractAddress).call({
+        const allowance = await contract.methods.allowance(address, actionsContractAddress).call({
             from: address
         });
         return getFromDecimals(currencyAddress, allowance);
@@ -63,7 +64,7 @@ class TokensService {
         const contract = getCurrencyContract(currencyAddress);
 
         try {
-            await contract.methods.approve(actionContractAddress, getDecimals(currencyAddress, amount.toString())).send({
+            await contract.methods.approve(actionsContractAddress, getDecimals(currencyAddress, amount.toString())).send({
                 from: address,
                 value: 0
             });

@@ -68,16 +68,22 @@ const Start = () => {
         const currencyAddress = (currency == "") ? '0x0000000000000000000000000000000000000000' : currency;
 
         try {
-            const newSpadResponse = await factoryContract.methods.createSpad(name, tokenSymbol, getDecimals(currency, target), getDecimals(currency, minInvestment), getDecimals(currency, maxInvestment), currencyAddress).send({
+            const newSpadResponse = await factoryContract.methods.createSpad(name, tokenSymbol, getDecimals(currency, target), getDecimals(currency, minInvestment), getDecimals(currency, maxInvestment), currencyAddress, passKey).send({
                 from: address,
                 value: 0
             });
             toast.success("SPAD created successfully.");
-            console.log(newSpadResponse.events.SpadCreated.returnValues.spadAddress);
-            router.push({
-                pathname: '/spad/'+newSpadResponse.events.SpadCreated.returnValues.spadAddress,
-                query: { isNew: 1 }
-            })
+            if(passKey == "") {
+                router.push({
+                    pathname: '/spad/'+newSpadResponse.events.SpadCreated.returnValues.spadAddress,
+                    query: { isNew: 1 }
+                })
+            } else {
+                router.push({
+                    pathname: '/spad/'+newSpadResponse.events.SpadPrivateCreated.returnValues.spadAddress,
+                    query: { isNew: 1 }
+                })
+            }
         } catch (error) {
             if(error.message) {
                 toast.error("SPAD creation failed." + error.message)
@@ -240,21 +246,21 @@ const Start = () => {
                                 </Form.Group>
                             </Col>
                         </Row> */}
-                        {/* <Row>
-                            <Col md="6">
-                            <Form.Check 
-                                type="switch"
-                                id="isPrivate"
-                                label="Private SPAD"
-                                className="mt-2"
-                                onChange={
-                                    () => {
-                                        setIsPrivate(!isPrivate);
-                                        setErrorMsg("")
+                        <Row className="justify-content-center">
+                            <Col md="auto">
+                                <Form.Check 
+                                    type="switch"
+                                    id="isPrivate"
+                                    label="Private SPAD"
+                                    className="mt-2"
+                                    onChange={
+                                        () => {
+                                            setIsPrivate(!isPrivate);
+                                            setErrorMsg("")
+                                        }
                                     }
-                                }
-                                defaultChecked={isPrivate}
-                            />
+                                    defaultChecked={isPrivate}
+                                />
                             </Col>
                             <Fade in={isPrivate}>
                                 <Col md="6">
@@ -277,7 +283,7 @@ const Start = () => {
                                     </InputGroup>
                                 </Col>
                             </Fade>
-                        </Row> */}
+                        </Row>
                         <Form.Group className="mb-4 text-center">
                             <Form.Label>CONTRIBUTION BY CREATOR TO ACTIVATE SPAD</Form.Label>
                             <p>

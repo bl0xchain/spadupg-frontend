@@ -54,6 +54,63 @@
             {
                 "indexed": true,
                 "internalType": "address",
+                "name": "contributor",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "InvestmentClaimed",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "previousOwner",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "OwnershipTransferred",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "account",
+                "type": "address"
+            }
+        ],
+        "name": "Paused",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": true,
+                "internalType": "address",
+                "name": "spadAddress",
+                "type": "address"
+            },
+            {
+                "indexed": true,
+                "internalType": "address",
                 "name": "pitcher",
                 "type": "address"
             }
@@ -90,7 +147,7 @@
         "anonymous": false,
         "inputs": [
             {
-                "indexed": true,
+                "indexed": false,
                 "internalType": "address",
                 "name": "spadAddress",
                 "type": "address"
@@ -103,29 +160,39 @@
         "anonymous": false,
         "inputs": [
             {
-                "indexed": true,
+                "indexed": false,
                 "internalType": "address",
-                "name": "spadAddress",
+                "name": "account",
                 "type": "address"
             }
         ],
-        "name": "SpadAdded",
+        "name": "Unpaused",
         "type": "event"
     },
     {
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_spadAddress",
+                "name": "spadAddress",
                 "type": "address"
             },
             {
                 "internalType": "string",
-                "name": "_description",
+                "name": "pitchDetails",
                 "type": "string"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokenAmount",
+                "type": "uint256"
             }
         ],
-        "name": "activate",
+        "name": "activateSpad",
         "outputs": [],
         "stateMutability": "payable",
         "type": "function"
@@ -134,18 +201,13 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_spadAddress",
+                "name": "spadAddress",
                 "type": "address"
             },
             {
-                "internalType": "address",
-                "name": "_currencyAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_spadInitiator",
-                "type": "address"
+                "internalType": "string",
+                "name": "passKey",
+                "type": "string"
             }
         ],
         "name": "addSpad",
@@ -157,17 +219,43 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_spadAddress",
+                "name": "spadAddress",
+                "type": "address"
+            }
+        ],
+        "name": "claimPitch",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "spadAddress",
+                "type": "address"
+            }
+        ],
+        "name": "claimTokens",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "spadAddress",
                 "type": "address"
             },
             {
                 "internalType": "uint256",
-                "name": "_amount",
+                "name": "amount",
                 "type": "uint256"
             },
             {
                 "internalType": "string",
-                "name": "_passKey",
+                "name": "passKey",
                 "type": "string"
             }
         ],
@@ -180,95 +268,7 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_spadAddress",
-                "type": "address"
-            }
-        ],
-        "name": "getAcquiredBy",
-        "outputs": [
-            {
-                "internalType": "address",
-                "name": "",
-                "type": "address"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_spadAddress",
-                "type": "address"
-            },
-            {
-                "internalType": "address",
-                "name": "_contributor",
-                "type": "address"
-            }
-        ],
-        "name": "getContribution",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getInitiatedSpads",
-        "outputs": [
-            {
-                "internalType": "address[]",
-                "name": "",
-                "type": "address[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [],
-        "name": "getInvestedSpads",
-        "outputs": [
-            {
-                "internalType": "address[]",
-                "name": "",
-                "type": "address[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_spadAddress",
-                "type": "address"
-            }
-        ],
-        "name": "getInvestorCount",
-        "outputs": [
-            {
-                "internalType": "uint256",
-                "name": "",
-                "type": "uint256"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_spadAddress",
+                "name": "spadAddress",
                 "type": "address"
             }
         ],
@@ -288,43 +288,15 @@
                 "internalType": "uint8",
                 "name": "status",
                 "type": "uint8"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
+            },
             {
                 "internalType": "address",
-                "name": "_spadAddress",
+                "name": "tokenAddress",
                 "type": "address"
-            }
-        ],
-        "name": "getPitchers",
-        "outputs": [
-            {
-                "internalType": "address[]",
-                "name": "",
-                "type": "address[]"
-            }
-        ],
-        "stateMutability": "view",
-        "type": "function"
-    },
-    {
-        "inputs": [
-            {
-                "internalType": "address",
-                "name": "_spadAddress",
-                "type": "address"
-            }
-        ],
-        "name": "getPitchesCount",
-        "outputs": [
+            },
             {
                 "internalType": "uint256",
-                "name": "",
+                "name": "tokenAmount",
                 "type": "uint256"
             }
         ],
@@ -335,7 +307,7 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_spadFactoryAddress",
+                "name": "_factoryAddress",
                 "type": "address"
             }
         ],
@@ -345,20 +317,53 @@
         "type": "function"
     },
     {
+        "inputs": [],
+        "name": "owner",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "pause",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "paused",
+        "outputs": [
+            {
+                "internalType": "bool",
+                "name": "",
+                "type": "bool"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_spadAddress",
+                "name": "spadAddress",
                 "type": "address"
             },
             {
                 "internalType": "address",
-                "name": "_pitcher",
+                "name": "pitcher",
                 "type": "address"
             },
             {
                 "internalType": "bool",
-                "name": "_approved",
+                "name": "approved",
                 "type": "bool"
             }
         ],
@@ -371,21 +376,76 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_spadAddress",
+                "name": "spadAddress",
                 "type": "address"
             },
             {
                 "internalType": "string",
-                "name": "_name",
+                "name": "name",
                 "type": "string"
             },
             {
                 "internalType": "string",
-                "name": "_description",
+                "name": "description",
                 "type": "string"
+            },
+            {
+                "internalType": "address",
+                "name": "tokenAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "uint256",
+                "name": "tokenAmount",
+                "type": "uint256"
             }
         ],
         "name": "pitchSpad",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "renounceOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "_fundAddress",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "_pitchAddress",
+                "type": "address"
+            }
+        ],
+        "name": "setModuleAddresses",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "address",
+                "name": "newOwner",
+                "type": "address"
+            }
+        ],
+        "name": "transferOwnership",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "unpause",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"

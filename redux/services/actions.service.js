@@ -8,7 +8,7 @@ export const actionsContract = new web3.eth.Contract(
 );
 
 class ActionsService {
-    async activateSpad(address, spadAddress, amount, currencyAddress) {
+    async activateSpad(address, spadAddress, amount, currencyAddress, pitchDetails, tokenAddress, tokenAmount) {
         if (!window.ethereum || address === null || address === "") {
             return {
                 status: "💡 Connect your Metamask wallet to Activate a SPAD.",
@@ -19,9 +19,13 @@ class ActionsService {
         if(currencyAddress === "") {
             value = amount.toString();
         }
-        
+        console.log(tokenAmount);
+        console.log(tokenAddress);
+        if(tokenAddress === "") {
+            tokenAddress = '0x0000000000000000000000000000000000000000';
+        }
         try {
-            const response = await actionsContract.methods.activateSpad(spadAddress).send({
+            const response = await actionsContract.methods.activateSpad(spadAddress, pitchDetails, tokenAddress, tokenAmount).send({
                 from: address,
                 value: value
             });
@@ -38,13 +42,13 @@ class ActionsService {
         }
     }
 
-    async contribute(address, spadAddress, amount, currencyAddress) {
+    async contribute(address, spadAddress, amount, currencyAddress, passKey) {
         let value = "0";
         if(currencyAddress === "") {
             value = getDecimals("", amount);    
         }
         try {
-            await actionsContract.methods.contribute(spadAddress,  getDecimals(currencyAddress, amount)).send({
+            await actionsContract.methods.contribute(spadAddress,  getDecimals(currencyAddress, amount), passKey).send({
                 from: address,
                 value: value
             });

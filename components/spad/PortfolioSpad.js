@@ -39,7 +39,8 @@ const PortfolioSpad = ({ spadAddress, isInitiator, isPitcher }) => {
         const response = await actionsService.claimTokens(address, spadAddress);
         if(response.code == 200) {
             toast.success("Claimed investment for SPAD")
-            fetchData();
+            const isClaimed = await fundService.isInvestmentClaimed(address, spadAddress);
+            setIsClaimed(isClaimed);
         } else {
             toast.error("Problem with claiming investment for SPAD")
         }

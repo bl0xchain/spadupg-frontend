@@ -61,6 +61,19 @@ class FactoryService {
         })
         return spadAddresses.reverse();
     }
+
+    async getCreatedPrivateSpads(address) {
+        const spadAddresses = [];
+        const spads = await factoryContract.getPastEvents('SpadPrivateCreated', {
+            filter: { initiator: address },
+            fromBlock: 0,
+            toBlock: 'latest'
+        });
+        spads.forEach((event) => {
+            spadAddresses.push(event.returnValues.spadAddress);
+        })
+        return spadAddresses.reverse();
+    }
 }
 
 export default new FactoryService();

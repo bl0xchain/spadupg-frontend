@@ -72,6 +72,25 @@
         "anonymous": false,
         "inputs": [
             {
+                "indexed": true,
+                "internalType": "address",
+                "name": "initiator",
+                "type": "address"
+            },
+            {
+                "indexed": false,
+                "internalType": "address",
+                "name": "spadAddress",
+                "type": "address"
+            }
+        ],
+        "name": "SpadPrivateCreated",
+        "type": "event"
+    },
+    {
+        "anonymous": false,
+        "inputs": [
+            {
                 "indexed": false,
                 "internalType": "address",
                 "name": "account",
@@ -131,6 +150,11 @@
                 "internalType": "address",
                 "name": "_currencyAddress",
                 "type": "address"
+            },
+            {
+                "internalType": "string",
+                "name": "passKey",
+                "type": "string"
             }
         ],
         "name": "createSpad",

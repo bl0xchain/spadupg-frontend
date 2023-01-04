@@ -1,8 +1,10 @@
 import web3 from "../web3";
-import fundService from "./fund.service";
+import fundService, { fundContract } from "./fund.service";
 import pitchService from "./pitch.service";
 import { getCurrencyName, getFromDecimals } from "./tokens.service";
 const contractSpadABI = require("../../abis/spads-abi.json");
+const contractPrivacyABI = require("../../abis/privacy-abi.json");
+const privacyContract = new web3.eth.Contract(contractPrivacyABI, "0x5725a126E67230bdCEcE997BBaCE45A4BF72138E");
 
 
 class SpadService {
@@ -49,6 +51,8 @@ class SpadService {
                 spadDetails.pitch = await pitchService.getPitch(spadDetails.acquiredBy, spadAddress);
             }
         }
+
+        spadDetails.isPrivate = await privacyContract.methods.isPrivate(spadAddress).call();
 
         return spadDetails;
     }

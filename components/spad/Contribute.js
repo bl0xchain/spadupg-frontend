@@ -7,7 +7,7 @@ import fundService from "../../redux/services/fund.service";
 // import spadService from "../../redux/services/spad.service";
 import tokensService, { getFromDecimals } from "../../redux/services/tokens.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
-import PassKeyModal from "./PassKeyModal";
+import PassKeyModal from "../layout/PassKeyModal";
 
 const Contribute = ({ spadAddress, spad, loadSpad }) => {
     const [isContribute, setIsContribute] = useState(false);
@@ -49,22 +49,11 @@ const Contribute = ({ spadAddress, spad, loadSpad }) => {
                 } else {
                     setAllowanceNeeded(false);
                 }
-                // if(spad.isPrivate) {
-                //     setPassKeyModalShow(true);
-                // } else {
-                //     handlePassKeyContribute();
-                // }
-                setContributing(true);
-                const response = await actionsService.contribute(address, spadAddress, contributionAmount, spad.currencyAddress);
-                if(response.code == 200) {
-                    toast.success("Contributed for SPAD successfully")
-                    updateContribution();
-                    setIsContribute(false);
-                    loadSpad();
+                if(spad.isPrivate) {
+                    setPassKeyModalShow(true);
                 } else {
-                    toast.error("Problem with contributing for SPAD")
+                    handlePassKeyContribute();
                 }
-                setContributing(false);
             } else {
                 setErrorMsg('Contribution must be between '+minContributionNeeded+' '+spad.investmentCurrency+' to '+spad.maxInvestmentView+' '+spad.investmentCurrency);
                 setContributing(false);
@@ -89,7 +78,8 @@ const Contribute = ({ spadAddress, spad, loadSpad }) => {
 
     const handlePassKeyContribute = async() => {
         setContributing(true);
-        const response = await spadService.contribute(address, spadAddress, spad.currencyAddress, contributionAmount, passKey);
+        setPassKeyModalShow(false);
+        const response = await actionsService.contribute(address, spadAddress, contributionAmount, spad.currencyAddress, passKey);
         if(response.code == 200) {
             toast.success("Contributed for SPAD successfully")
             updateContribution();
