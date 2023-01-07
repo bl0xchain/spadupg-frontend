@@ -21,10 +21,7 @@ class PitchService {
                 pitch.tokenSymbol = "";
                 pitch.tokenDecimals = 18;
             }
-            // const tokenContract = getCurrencyContract(pitch.tokenAddress);
-            // pitch.tokenName = await tokenContract.methods.name().call();
-            // pitch.tokenSymbol = await tokenContract.methods.symbol().call();
-            // pitch.tokenDecimals = await tokenContract.methods.decimals().call();
+            
             if(pitch.tokenDecimals == 18) {
                 pitch.amount = getFromDecimals("", pitch.tokenAmount);
             } else {
@@ -38,10 +35,6 @@ class PitchService {
         const acquiredBy = await pitchContract.methods.getAcquiredBy(spadAddress).call();
         return acquiredBy;
     } 
-
-    async getPitchers(spadAddress) {
-
-    }
 }
 
 export default new PitchService();

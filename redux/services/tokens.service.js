@@ -79,6 +79,25 @@ class TokensService {
         }
     }
 
+    async approveTokens (address, currencyAddress, amount)  {
+        const contract = getCurrencyContract(currencyAddress);
+
+        try {
+            await contract.methods.approve(actionsContractAddress, amount).send({
+                from: address,
+                value: 0
+            });
+            return {
+                code: 200
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                code: 403
+            };
+        }
+    }
+
     async getTokenBalance(address, tokenAddress, currencyAddress) {
         const contract = getCurrencyContract(tokenAddress);
         const balance = await contract.methods.balanceOf(address).call({

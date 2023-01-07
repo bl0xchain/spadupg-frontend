@@ -118,7 +118,7 @@ const SpadActions = ({ spadAddress, spad, loadSpad }) => {
                         <>
                         {
                             isClaimed ?
-                            <p className="text-success1 mb-0">You have claimed your <b>{claimedTokens} {" "} {spad.symbol}</b> tokens </p> :
+                            <p className="text-success1 mb-0">You have claimed your <b>{claimedTokens} {" "} {spad.pitch.tokenSymbol}</b> tokens </p> :
                             <div>
                             {
                                 claimProcessing ?

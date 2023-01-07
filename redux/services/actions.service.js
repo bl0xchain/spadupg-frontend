@@ -145,6 +145,23 @@ class ActionsService {
         }
     }
 
+    async claimPitch(address, spadAddress) {
+        try {
+            await actionsContract.methods.claimPitch(spadAddress).send({
+                from: address,
+                value: 0
+            });
+            return {
+                code: 200
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                code: 403
+            };
+        }
+    }
+
     async getClaimedTokens(address, spadAddress) {
         const claims = await actionsContract.getPastEvents('InvestmentClaimed', {
             filter: { spadAddress: spadAddress, contributor: address },
