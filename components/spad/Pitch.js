@@ -106,7 +106,14 @@ const Pitch = ({ spadAddress, pitcher }) => {
                     {
                         (pitch.status === '2') ? 
                         <p className="text-success1">Approved</p> :
-                        <p className="text-danger1">Rejected</p>
+                        <>
+                        {
+                            (pitch.status === '3') ? 
+                            <p className="text-danger1">Rejected</p> :
+                            <p className="text-warning">Selected</p>
+                        }
+                        </>
+                        
                     }
                     </>
                 }

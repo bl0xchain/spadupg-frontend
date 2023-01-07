@@ -4,6 +4,7 @@ import { Button, Card, Col, Form, Row, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import EtherScanAddress from "../../components/EtherScanAddress";
+import ClaimPitch from "../../components/spad/ClaimPitch";
 import SpadCardPlaceholder from "../../components/spad/SpadCardPlaceholder";
 import SpadDetailsCard from "../../components/spad/SpadDetailsCard";
 import actionsService from "../../redux/services/actions.service";
@@ -63,7 +64,7 @@ const PitchSpad = () => {
                 const balance = await tokenContract.methods.balanceOf(address).call({
                     from: address
                 });
-                if(balance > 0) {
+                if(balance <= 0) {
                     setErrorMsg("Make sure you have token balance");
                     setPitchProcessing(false);
                     return;
@@ -88,8 +89,7 @@ const PitchSpad = () => {
         }
         const response = await actionsService.pitchSpad(address, spadAddress, name, description, tokenAddress, amount);
         if(response.code == 200) {
-            const pitch = await pitchService.getPitch(address, spadAddress);
-            setPitch(pitch);
+            await loadPitch();
             toast.success("Pitch Proposed successfully")
         } else {
             toast.error("Pitch Propsal failed")
@@ -106,11 +106,15 @@ const PitchSpad = () => {
             setContribution(parseFloat(getFromDecimals(spad.currencyAddress, contrib)));
             console.log(contrib);
             if(contrib == 0) {
-                const pitch = await pitchService.getPitch(address, spadAddress);
-                setPitch(pitch);
+                loadPitch();
             }
         }
     }, [address, spad, spadAddress])
+
+    const loadPitch = async() => {
+        const pitch = await pitchService.getPitch(address, spadAddress);
+        setPitch(pitch);
+    }
 
     useEffect(() => {
         if(spadAddress !== undefined) {
@@ -229,7 +233,13 @@ const PitchSpad = () => {
                                                     {
                                                         (pitch.status === '2') ? 
                                                         <span className="text-success1">Approved</span> :
-                                                        <span className="text-danger1">Rejected</span>
+                                                        <>
+                                                        {
+                                                            (pitch.status === '3') ? 
+                                                            <span className="text-danger1">Rejected</span> :
+                                                            <span className="text-warning">Selected</span>
+                                                        }
+                                                        </>
                                                     }
                                                     </div>
                                                 }
@@ -248,6 +258,10 @@ const PitchSpad = () => {
                                                 )
                                             </dd>
                                         </dl>
+                                        {
+                                            pitch.status == 4 &&
+                                            <ClaimPitch spadAddress={spadAddress} pitch={pitch} loadPitch={loadPitch} />
+                                        }
                                     </div>
                                 }
                                 </>
