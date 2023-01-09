@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import actionsService from "../../redux/services/actions.service";
 import fundService from "../../redux/services/fund.service";
+import pitchService from "../../redux/services/pitch.service";
 import spadService from "../../redux/services/spad.service";
 import spadsService from "../../redux/services/spads.service";
 import { showConnectionPopUp } from "../../redux/slices/walletSlice";
@@ -17,6 +18,7 @@ const PortfolioSpad = ({ spadAddress, isInitiator, isPitcher }) => {
     const [spad, setSpad] = useState(null);
     const [claimProcessing, setClaimProcessing] = useState(false);
     const [isClaimed, setIsClaimed] = useState(false);
+    const [pitch, setPitch] = useState(null);
 
     const dispatch = useDispatch()
     const address = useSelector((state) => state.wallet.address);
@@ -28,6 +30,14 @@ const PortfolioSpad = ({ spadAddress, isInitiator, isPitcher }) => {
         3: 'expired',
         4: 'closed',
         5: 'acquired'
+    }
+
+    const pitchStatus = {
+        0: 'invalid',
+        1: 'proposed',
+        2: 'approved',
+        3: 'rejected',
+        4: 'selected',
     }
 
     const handleClaim = async () => {
@@ -54,7 +64,12 @@ const PortfolioSpad = ({ spadAddress, isInitiator, isPitcher }) => {
         if(spadDetails.status == 5) {
             const isClaimed = await fundService.isInvestmentClaimed(address, spadAddress);
             setIsClaimed(isClaimed);
-        }   
+        }
+        
+        if(isPitcher) {
+            const pitch1 = await pitchService.getPitch(address, spadAddress);
+            setPitch(pitch1);
+        }
     }
 
     useEffect(() => {
@@ -73,9 +88,13 @@ const PortfolioSpad = ({ spadAddress, isInitiator, isPitcher }) => {
                         {spad.name}
                     </Link>
                 </td>
-                <td>
-                    {spad.symbol}
-                </td>
+                {
+                    ! isPitcher &&
+                    <td>
+                        {spad.symbol}
+                    </td>
+                }
+                
                 <td>
                     <EtherScanAddress address={spadAddress} showIcon={true} />
                 </td>
@@ -83,6 +102,12 @@ const PortfolioSpad = ({ spadAddress, isInitiator, isPitcher }) => {
                     <FaDotCircle  className={spadStatus[spad.status]} /> {" "}
                     {spadStatus[spad.status]}
                 </td>
+                {
+                    (isPitcher && pitch) &&
+                    <td className="text-uppercase">
+                        {pitchStatus[pitch.status]}
+                    </td>
+                }
                 <td>
                 {
                     isInitiator ?
@@ -99,22 +124,29 @@ const PortfolioSpad = ({ spadAddress, isInitiator, isPitcher }) => {
                     <>
                     {
                         isPitcher ?
-                        <Link className="btn btn-color" href={`pitch/${spadAddress}`}>View Pitch</Link> :
+                        <Link className="btn btn-color" href={`pitch/${spadAddress}`}>
+                            {
+                            (pitch && pitch.status == 4) ?
+                                <>Transfer {pitch.tokenSymbol} & claim</> :
+                                <>View Pitch</>
+                            }
+                            
+                        </Link> :
                         <>
                         {
                             (spad.status == 5) ?
                             <>
                             {
                                 (isClaimed > 0) ?
-                                <p className="mb-0">Investment Claimed</p> :
+                                <p className="mb-0">{ spad.pitch.tokenSymbol } {" "} Tokens Claimed</p> :
                                 <>
                                 {
                                     claimProcessing ?
                                     <Button variant="color" disabled>
-                                        Claiming Tokens { ' ' } <Spinner animation="border" size="sm" />
+                                        Claiming { spad.pitch.tokenSymbol } {" "} Tokens { ' ' } <Spinner animation="border" size="sm" />
                                     </Button> :
                                     <Button variant="color" onClick={handleClaim}>
-                                        Claim Tokens
+                                        Claim { spad.pitch.tokenSymbol } {" "} Tokens
                                     </Button>   
                                 }
                                 </>

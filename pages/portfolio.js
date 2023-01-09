@@ -40,7 +40,7 @@ const Portfolio = () => {
             {
                 address === '' ?
                 <Container className="main-content align-items-center d-flex">
-                    <div className="text-center" style={{width: '100%', marginBottom: '100px;'}}>
+                    <div className="text-center" style={{width: '100%', marginBottom: '100px'}}>
                         <h2 className="mb-3">Please connect wallet</h2>
                         <Wallet />
                     </div> 
@@ -54,7 +54,7 @@ const Portfolio = () => {
                                 <thead>
                                     <tr className="text-secondary1">
                                         <th>SPAD NAME</th>
-                                        <th>TOKEN SYMBOL</th>
+                                        <th>SPAD SYMBOL</th>
                                         <th>ADDRESS</th>
                                         <th>STATUS</th>
                                         <th>CLAIM</th>
@@ -123,9 +123,9 @@ const Portfolio = () => {
                                 <thead>
                                     <tr className="text-secondary1">
                                         <th>SPAD NAME</th>
-                                        <th>SPAD SYMBOL</th>
                                         <th>ADDRESS</th>
                                         <th>STATUS</th>
+                                        <th>PITCH STATUS</th>
                                         <th>PITCHES</th>
                                     </tr>
                                 </thead>
