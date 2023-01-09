@@ -4,6 +4,7 @@ import { Card, Col, Placeholder, Row, Spinner } from "react-bootstrap";
 import Confetti from "react-confetti";
 import Moment from "react-moment";
 import EtherScanAddress from "../../../components/EtherScanAddress";
+import CompletedSpad from "../../../components/spad/CompletedSpad";
 import CreatorPitch from "../../../components/spad/CreatorPitch";
 import Participants from "../../../components/spad/Participants";
 import SpadCardPlaceholder from "../../../components/spad/SpadCardPlaceholder";
@@ -51,6 +52,10 @@ const Spad = () => {
                 }
                 
                 <SpadDetailsCard spadAddress={spadAddress} spad={spad} loadSpad={loadSpad} />
+                {
+                    (spad.status == 4) &&
+                    <CompletedSpad spadAddress={spadAddress} spad={spad} />
+                }
                 {/* <Card className="rounded color fw-bold p-4 mb-4 shadow compact">
                     <h2 className="fw-bold mb-4">SPAD DETAILS</h2>
                     <Row>
