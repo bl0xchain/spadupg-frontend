@@ -70,7 +70,7 @@ const Contribute = ({ spadAddress, spad, loadSpad }) => {
         }
         const allowance = await tokensService.getCurrencyAllowance(address, spad.currencyAddress);
         if(parseFloat(allowance) >= parseFloat(contributionAmount)) {
-            return ;
+            return false;
         } else {
             return true;
         }
@@ -100,10 +100,15 @@ const Contribute = ({ spadAddress, spad, loadSpad }) => {
         const response = await tokensService.allowCurrency(address, spad.currencyAddress, contributionAmount);
         if(response.code == 200 ) {
             toast.success("Currency allowed successfully.")
-            isAllowanceNeeded()
+            if(await isAllowanceNeeded()) {
+                setAllowanceNeeded(true);
+            } else {
+                setAllowanceNeeded(false);
+            }
         } else {
             toast.error("Currency allowance failed.")
         }
+        setAllowing(false);
     }
 
     useEffect(() => {
