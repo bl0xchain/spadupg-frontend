@@ -159,9 +159,13 @@ const Contribute = ({ spadAddress, spad, loadSpad }) => {
                             }
                             
                         </InputGroup>
-                        <div className="mt-1 text-end">
-                            <span style={{cursor: "pointer"}} onClick={() => setIsContribute(false)}>Cancel</span>
-                        </div>
+                        {
+                            (!contributing && !allowing) &&
+                            <div className="mt-1 text-end">
+                                <span style={{cursor: "pointer"}} onClick={() => setIsContribute(false)}>Cancel</span>
+                            </div>
+                        }
+                        
                     </div>
                 }
                 {
