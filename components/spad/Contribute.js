@@ -137,7 +137,7 @@ const Contribute = ({ spadAddress, spad, loadSpad }) => {
                     <InputGroup>
                         <input min="0.1" placeholder="Enter Amount" type="number" className="form-control" style={{borderStartStartRadius: '10px'}} />
                         <Button variant="color" disabled>
-                            CONTRIBUTING { ' ' } <Spinner animation="border" size="sm" />
+                            CONTRIBUTING { ' ' } {contributionAmount} {spad.investmentCurrency} <Spinner animation="border" size="sm" />
                         </Button>
                     </InputGroup> :
                     <div>
@@ -155,7 +155,9 @@ const Contribute = ({ spadAddress, spad, loadSpad }) => {
                                     <Button variant="color" onClick={handleCurrencyAllow}>Allow {contributionAmount} {spad.investmentCurrency}</Button>
                                 }
                                 </> :
-                                <Button variant="color" onClick={handleContribute}>CONTRIBUTE</Button>
+                                <Button variant="color" onClick={handleContribute}>
+                                    CONTRIBUTE {contributionAmount} {spad.investmentCurrency}
+                                </Button>
                             }
                             
                         </InputGroup>
